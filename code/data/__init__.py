@@ -41,6 +41,7 @@ class Data:
             # )
             # Load training dataset
             self.loader_train = self.create_loader(is_train=True,
+                dataset_name=self.data_train
                 batch_size=batch_size,
                 is_cpu=is_cpu,
                 number_of_threads=number_of_threads,
@@ -60,7 +61,7 @@ class Data:
         # )
 
         self.loader_test = self.create_loader(is_train=False,
-            dataset_name=test_dataset_name,
+            dataset_name=self.data_test,
             batch_size=1,
             is_cpu=is_cpu,
             number_of_threads=number_of_threads,
