@@ -1,7 +1,7 @@
 import argparse
 from option import template
 
-parser = argparse.ArgumentParser(description='Image_Dehaze')
+parser = argparse.ArgumentParser(description='Image_Dehaze', add_help=True)
 
 parser.add_argument('--template', default='ImageDehaze_SGID_PFF',
                     help='You can set various templates in options.py')
@@ -97,7 +97,7 @@ parser.add_argument('--max_iter_save', type=int, default=2000,
                     help='how many batches to wait before logging training status')
 
 args = parser.parse_args()
-template.set_template(args)
+args = template.set_template(args)
 
 if args.epochs == 0:
     args.epochs = 1e8
