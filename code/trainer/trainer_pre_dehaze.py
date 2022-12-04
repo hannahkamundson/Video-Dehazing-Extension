@@ -23,7 +23,7 @@ class Trainer_Pre_Dehaze(Trainer):
         return optimizer
 
     def train(self):
-        print("Now training")
+        print("PreDehaze: Now training")
         self.scheduler.step()
         epoch = self.scheduler.last_epoch + 1
         lr = self.scheduler.get_lr()[0]
@@ -70,6 +70,7 @@ class Trainer_Pre_Dehaze(Trainer):
         self.ckp.end_log(len(self.loader_train))
 
     def test(self):
+        print("PreDehaze: Now testing")
         epoch = self.scheduler.last_epoch + 1
         self.ckp.write_log('\nEvaluation:')
         self.model.eval()

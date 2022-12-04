@@ -1,4 +1,5 @@
 import torch
+import time
 
 import data
 import model
@@ -8,6 +9,7 @@ from trainer.trainer_dehaze import Trainer_Dehaze
 from trainer.trainer_pre_dehaze import Trainer_Pre_Dehaze
 from logger import logger
 
+beginning_time = time.perf_counter()
 args = option.args
 torch.manual_seed(args.seed)
 
@@ -37,3 +39,6 @@ while not t.terminate():
     t.test()
 
 chkp.done()
+
+end_time = time.perf_counter()
+print(f"Ran in {end_time - beginning_time:0.4f} seconds")
