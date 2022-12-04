@@ -11,7 +11,7 @@ def _set_base(args: Namespace) -> Namespace:
         The argparse namespace that was entered + the new changes we want to the args
     """
     args.data_train = 'RESIDE'
-    args.data_test = '../dataset/SOTS/indoor'
+    args.data_test = 'RESIDE'
     args.dir_data_test = '../dataset/SOTS/indoor'
     args.t_channels = 1
     args.n_feat = 32
