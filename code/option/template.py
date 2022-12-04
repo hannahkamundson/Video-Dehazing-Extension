@@ -1,6 +1,15 @@
 from argparse import Namespace
 
 def _set_base(args: Namespace) -> Namespace:
+    """
+    Set some basic parameters that we typically use for all the templates.
+
+    Args:
+        args: The argparse namespace you want modified
+    
+    Returns:
+        The argparse namespace that was entered + the new changes we want to the args
+    """
     args.data_train = 'RESIDE'
     args.data_test = '../dataset/SOTS/indoor'
     args.dir_data_test = '../dataset/SOTS/indoor'
@@ -23,6 +32,15 @@ def _set_base(args: Namespace) -> Namespace:
     return args
 
 def set_template(args: Namespace) -> Namespace:
+    """
+    Set the arparse namespace for different templates we have. For example, we have a "Pre_Dehaze".
+
+    Args:
+        args: The argparse namespace you want modified
+    
+    Returns:
+        The argparse namespace that was entered + the new changes we want to the args
+    """
     baseResideTrainDSPath = '../dataset/RESIDE/RESIDE/ITS_train'
     template_type: str = args.template
     args = _set_base(args)
