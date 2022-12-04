@@ -10,7 +10,7 @@ class Data:
         batch_size: int,
         number_of_threads: int,
         is_cpu: bool,
-        args: Namespace):
+        namespace: Namespace):
         """
         Args:
             test_only: Do we only want to test the data (and not train it)?
@@ -19,7 +19,7 @@ class Data:
         print(f'Data Manager: Creating for train and test: {train_dataset_name} & {test_dataset_name}')
         self.data_train: str = train_dataset_name
         self.data_test: str = test_dataset_name
-        self.args=args
+        self.args=namespace
 
         # If we are only doing tests
         if test_only:
@@ -28,17 +28,6 @@ class Data:
             self.loader_train = None
         # Otherwise, if we are doing training
         else:
-            # print(f'Data Manager: Loading the train dataset with batch size: {batch_size}, number of workers: {number_of_threads} and pin memory: {not is_cpu}')
-            # # Load training dataset 
-            # m_train = import_module('data.' + self.data_train.lower())
-            # trainset = getattr(m_train, self.data_train.upper())(self.args, name=self.data_train, train=True)
-            # self.loader_train = DataLoader(
-            #     trainset,
-            #     batch_size=batch_size,
-            #     shuffle=True,
-            #     pin_memory=not is_cpu,
-            #     num_workers=number_of_threads
-            # )
             # Load training dataset
             self.loader_train = self.create_loader(is_train=True,
                 dataset_name=self.data_train,
@@ -48,18 +37,7 @@ class Data:
                 args=args)
         
             
-        # load testing dataset
-        
-        # m_test = import_module('data.' + self.data_test.lower())
-        # testset = getattr(m_test, self.data_test.upper())(self.args, name=self.data_test, train=False)
-        # self.loader_test = DataLoader(
-        #     testset,
-        #     batch_size=1,
-        #     shuffle=False,
-        #     pin_memory=not is_cpu,
-        #     num_workers=number_of_threads
-        # )
-
+        # Load testing dataset
         self.loader_test = self.create_loader(is_train=False,
             dataset_name=self.data_test,
             batch_size=1,

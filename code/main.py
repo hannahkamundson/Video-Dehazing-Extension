@@ -22,7 +22,7 @@ loader: data.Data = data.Data(train_dataset_name=args.data_train,
     batch_size=args.batch_size, 
     number_of_threads=args.n_threads,
     is_cpu=args.cpu,
-    args=args)
+    namespace=args)
 
 print("Selected task: {}".format(args.task))
 if args.task == 'PreDehaze':
