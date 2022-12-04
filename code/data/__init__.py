@@ -19,7 +19,7 @@ class Data:
         print(f'Data Manager: Creating for train and test: {train_dataset_name} & {test_dataset_name}')
         self.data_train: str = train_dataset_name
         self.data_test: str = test_dataset_name
-        self.args=namespace
+        self.args: Namespace = namespace
 
         # If we are only doing tests
         if test_only:
@@ -46,7 +46,8 @@ class Data:
             namespace=self.args
             )
 
-    def _create_loader(is_train: bool,
+    def _create_loader(self,
+        is_train: bool,
         dataset_name: str,
         is_cpu: bool,
         number_of_threads: int,
