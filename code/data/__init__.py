@@ -43,7 +43,7 @@ class Data:
             batch_size=1,
             is_cpu=is_cpu,
             number_of_threads=number_of_threads,
-            args=args
+            args=self.args
             )
 
     def create_loader(is_train: bool,
