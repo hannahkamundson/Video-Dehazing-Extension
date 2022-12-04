@@ -3,8 +3,8 @@ from data import imagedata
 
 
 class RESIDE(imagedata.IMAGEDATA):
-    def __init__(self, args, name='RESIDE', train=True):
-        super(RESIDE, self).__init__(args, name=name, train=train)
+    def __init__(self, namespace, name='RESIDE', train=True):
+        super(RESIDE, self).__init__(args=namespace, name=name, train=train)
 
     def _set_filesystem(self, dir_data):
         print("Loading {} => {} DataSet".format("train" if self.train else "test", self.name))

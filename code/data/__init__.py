@@ -29,7 +29,7 @@ class Data:
         # Otherwise, if we are doing training
         else:
             # Load training dataset
-            self.loader_train = self.create_loader(is_train=True,
+            self.loader_train = self._create_loader(is_train=True,
                 dataset_name=self.data_train,
                 batch_size=batch_size,
                 is_cpu=is_cpu,
@@ -38,7 +38,7 @@ class Data:
         
             
         # Load testing dataset
-        self.loader_test = self.create_loader(is_train=False,
+        self.loader_test = self._create_loader(is_train=False,
             dataset_name=self.data_test,
             batch_size=1,
             is_cpu=is_cpu,
@@ -46,7 +46,7 @@ class Data:
             namespace=self.args
             )
 
-    def create_loader(is_train: bool,
+    def _create_loader(is_train: bool,
         dataset_name: str,
         is_cpu: bool,
         number_of_threads: int,
@@ -57,7 +57,7 @@ class Data:
         print(f'Data Manager: Loading the {data_type} dataset with batch size: {batch_size}, number of workers: {number_of_threads} and pin memory: {not is_cpu}')
 
         module = import_module('data.' + dataset_name.lower())
-        dataset = getattr(module, dataset_name.upper())(args=namespace, name=dataset_name, train=is_train)
+        dataset = getattr(module, dataset_name.upper())(namespace, name=dataset_name, train=is_train)
         return DataLoader(
             dataset=dataset,
             batch_size=batch_size,
