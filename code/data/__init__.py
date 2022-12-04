@@ -34,7 +34,7 @@ class Data:
                 batch_size=batch_size,
                 is_cpu=is_cpu,
                 number_of_threads=number_of_threads,
-                args=self.args)
+                namespace=self.args)
         
             
         # Load testing dataset
@@ -43,7 +43,7 @@ class Data:
             batch_size=1,
             is_cpu=is_cpu,
             number_of_threads=number_of_threads,
-            args=self.args
+            namespace=self.args
             )
 
     def create_loader(is_train: bool,
@@ -51,13 +51,13 @@ class Data:
         is_cpu: bool,
         number_of_threads: int,
         batch_size: int,
-        args: Namespace,
+        namespace: Namespace,
         ) -> DataLoader:
         data_type = "training" if is_train else "testing"
         print(f'Data Manager: Loading the {data_type} dataset with batch size: {batch_size}, number of workers: {number_of_threads} and pin memory: {not is_cpu}')
 
         module = import_module('data.' + dataset_name.lower())
-        dataset = getattr(module, dataset_name.upper())(args, name=dataset_name, train=is_train)
+        dataset = getattr(module, dataset_name.upper())(namespace, name=dataset_name, train=is_train)
         return DataLoader(
             dataset=dataset,
             batch_size=batch_size,
