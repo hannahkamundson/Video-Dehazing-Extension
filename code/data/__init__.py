@@ -34,7 +34,7 @@ class Data:
                 batch_size=batch_size,
                 is_cpu=is_cpu,
                 number_of_threads=number_of_threads,
-                args=args)
+                args=self.args)
         
             
         # Load testing dataset
