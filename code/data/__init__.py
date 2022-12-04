@@ -55,7 +55,7 @@ class Data:
         namespace: Namespace,
         ) -> DataLoader:
         data_type = "training" if is_train else "testing"
-        print(f'Data Manager: Loading the {data_type} dataset with batch size: {batch_size}, number of workers: {number_of_threads} and pin memory: {not is_cpu}')
+        print(f'Data Manager: Loading the {data_type} dataset with name {dataset_name} batch size: {batch_size}, number of workers: {number_of_threads} and pin memory: {not is_cpu}')
 
         module = import_module('data.' + dataset_name.lower())
         dataset = getattr(module, dataset_name.upper())(namespace, name=dataset_name, train=is_train)
