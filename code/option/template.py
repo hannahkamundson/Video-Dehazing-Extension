@@ -60,6 +60,8 @@ def set_template(args: Namespace) -> Namespace:
         elif template_type == 'Pre_Dehaze_10':
             print("Creating the template for Pre_Dehaze 10x10")
             args.dir_data = baseResideTrainDSPath + '_10'
+        elif template_type == "Pre_Dehaze_ohaze":
+            args.dir_data = baseResideTrainDSPath + '_ohaze'
         else:
             raise NotImplementedError('Template Pre Dehaze [{:s}] is not found'.format(args.template))
 
