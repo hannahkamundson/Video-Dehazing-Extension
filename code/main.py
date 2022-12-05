@@ -27,12 +27,13 @@ loader: data.Data = data.Data(train_dataset_name=args.data_train,
     namespace=args)
 
 print("Selected task: {}".format(args.task))
-if args.task == 'PreDehaze':
-    t = Trainer_Pre_Dehaze(args, loader, model, loss, chkp)
-elif args.task == 'ImageDehaze':
-    t = Trainer_Dehaze(args, loader, model, loss, chkp)
-else:
-    raise NotImplementedError('Task [{:s}] is not found'.format(args.task))
+match args.task:
+    case 'PreDehaze':
+        t = Trainer_Pre_Dehaze(args, loader, model, loss, chkp)
+    case 'ImageDehaze':
+        t = Trainer_Dehaze(args, loader, model, loss, chkp)
+    case _:
+        raise NotImplementedError('Task [{:s}] is not found'.format(args.task))
 
 while not t.terminate():
     t.train()
