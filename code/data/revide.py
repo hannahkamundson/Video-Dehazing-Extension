@@ -39,3 +39,26 @@ class REVIDE(imagedata.IMAGEDATA):
         assert len(clear_image_paths) == len(hazy_image_paths), f'The number of clear images must match the number of hazy images: clear {len(clear_image_paths)} hazy {len(hazy_image_paths)}'
 
         return sorted(clear_image_paths), sorted(hazy_image_paths)
+
+    def _load_file(self, idx):
+        """
+        Load the files.
+        I'm overriding this just to make sure we are grabbing the same frame from the same video
+        """
+        idx = self._get_index(idx)
+        # Get the paths for the ground truth/clear image and the hazy/input image
+        f_gt = self.images_gt[idx]
+        f_input = self.images_input[idx]
+
+        assert os.path.basename(f_gt) == os.path.basename(f_input), f'The frames need to be the same: clear {f_gt} hazy {f_input}'
+
+        # Since the file loading is more complicated, ensure they are coming from the same video
+        ground_truth_video = os.path.basename(os.path.dirname(f_gt))
+        input_video = os.path.basename(os.path.dirname(f_input))
+        assert ground_truth_video == input_video, f'The videos need to be the same: clear {f_gt} hazy {f_input}'
+
+        # read the images
+        gt = imageio.imread(f_gt)[:, :, :3]
+        input = imageio.imread(f_input)[:, :, :3]
+        filename, _ = os.path.splitext(os.path.basename(f_gt))
+        return input, gt, filename
