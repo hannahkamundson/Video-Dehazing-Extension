@@ -103,6 +103,7 @@ class Logger:
 
     def plot_loss_log(self, epoch):
         axis = np.linspace(1, epoch, epoch)
+        print(f'Logger: loss log: {self.loss_log}')
         for key in self.loss_log.keys():
             label = '{} Loss'.format(key)
             fig = plt.figure()
