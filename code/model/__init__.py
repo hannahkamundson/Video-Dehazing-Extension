@@ -6,7 +6,7 @@ import torch.distributed as dist
 import torch.nn as nn
 
 
-
+# Model
 class Model(nn.Module):
     def __init__(self, args, ckp):
         super(Model, self).__init__()
