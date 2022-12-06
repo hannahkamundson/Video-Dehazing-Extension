@@ -6,15 +6,29 @@ import torch.utils.data as data
 
 
 class IMAGEDATA(data.Dataset):
-    def __init__(self, args, name='', train=True):
+    def __init__(self, 
+        args, 
+        name: str, 
+        train_directory: str,
+        test_directory: str,
+        train=True, 
+        clear_folder: str='GT', 
+        hazy_folder: str='INPUT'):
+
         self.args = args
         self.name = name
         self.train = train
+        self.clear_folder = clear_folder
+        self.hazy_folder = hazy_folder
+        # Do you want to load all the data at once on RAM?
+        self.load_all_on_ram = args.process
 
+        # Set the clear and hazy file systems
+        # Choose a directory based on whether we are looking at the training dataset or the testing dataset
         if train:
-            self._set_filesystem(args.dir_data)
+            self._set_filesystem(train_directory)
         else:
-            self._set_filesystem(args.dir_data_test)
+            self._set_filesystem(test_directory)
 
         self.images_gt, self.images_input = self._scan()
 
@@ -25,18 +39,30 @@ class IMAGEDATA(data.Dataset):
             self.repeat = max(args.test_every // max((self.num_image // args.batch_size), 1), 1)
             print("Dataset repeat:", self.repeat)
 
-        if args.process:
+        if self.load_all_on_ram:
             self.data_gt, self.data_input = self._load(self.images_gt, self.images_input)
 
     def _set_filesystem(self, dir_data):
         print("Loading {} => {} DataSet".format("train" if self.train else "test", self.name))
+        # apath is just the path to the dataset. It should contain a "clear "images" folder and a 
+        # "hazy images" folder, though they can be named different things depending on the child 
+        # class' implementation
         self.apath = dir_data
-        self.dir_gt = os.path.join(self.apath, 'GT')
-        self.dir_input = os.path.join(self.apath, 'INPUT')
-        print("DataSet GT path:", self.dir_gt)
-        print("DataSet INPUT path:", self.dir_input)
 
-    def _scan(self):
+        # Set the clear path by getting the full path to the dataset + adding the clear folder to the end
+        self.dir_gt = os.path.join(self.apath, self.clear_folder)
+        self.dir_input = os.path.join(self.apath, self.hazy_folder)
+        print(f'DataSet clear/ground truth path:', self.dir_gt)
+        print(f'DataSet hazy/input path:', self.dir_input)
+
+    def _scan(self) -> tuple[list[str], list[str]]:
+        """
+        Get the images for the ground truth and the input.
+        In our case, ground truth usually means clear images and input means hazy images.
+
+        Returns:
+            a tuple that has (list of paths for clear/ground truth images, list of paths for hazy/input images)
+        """
         names_gt = sorted(glob.glob(os.path.join(self.dir_gt, '*')))
         names_input = sorted(glob.glob(os.path.join(self.dir_input, '*')))
         assert len(names_gt) == len(names_input), "len(names_gt) must equal len(names_input)"
@@ -49,7 +75,11 @@ class IMAGEDATA(data.Dataset):
         return data_gt, data_input
 
     def __getitem__(self, idx):
-        if self.args.process:
+        """
+        This is the main method that needs to be implemented for dataset, which supports fetching a data sample for 
+        a given key.
+        """
+        if self.load_all_on_ram:
             input, gt, filename = self._load_file_from_loaded_data(idx)
         else:
             input, gt, filename = self._load_file(idx)

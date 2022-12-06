@@ -51,6 +51,7 @@ def set_template(args: Namespace) -> Namespace:
         args.save = "Pre_Dehaze"
         args.other_loss = 'grad+others'
 
+        # All of these are stored in the RESIDE path
         if template_type == 'Pre_Dehaze':
             print("Creating the template for Pre_Dehaze 1x1")
             args.dir_data = baseResideTrainDSPath
@@ -60,8 +61,16 @@ def set_template(args: Namespace) -> Namespace:
         elif template_type == 'Pre_Dehaze_10':
             print("Creating the template for Pre_Dehaze 10x10")
             args.dir_data = baseResideTrainDSPath + '_10'
+        # This one isn't RESIDE but we are still storing it in the same path
         elif template_type == "Pre_Dehaze_ohaze":
             args.dir_data = baseResideTrainDSPath + '_ohaze'
+        # REVIDE dataset is really similar but we have a few more modifications so there is more here
+        elif template_type == "Pre_Dehaze_revide":
+            args.data_train = 'REVIDE'
+            args.data_test = 'REVIDE'
+            # dir_data is the path to the training data
+            args.dir_data = '../dataset/REVIDE/Train'
+
         else:
             raise NotImplementedError('Template Pre Dehaze [{:s}] is not found'.format(args.template))
 
