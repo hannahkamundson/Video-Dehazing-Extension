@@ -70,9 +70,10 @@ class Trainer_Pre_Dehaze(Trainer):
                 self.model.save_now_model(apath=self.ckp.dir,
                                           flag='{}_{}'.format(epoch - 1, (batch + 1) // self.args.max_iter_save))
 
+        self.ckp.end_log(len(self.loader_train))
+
         # This is where self.scheduler.step() was moved
         self.scheduler.step()
-        self.ckp.end_log(len(self.loader_train))
         
 
     def test(self):
@@ -83,7 +84,7 @@ class Trainer_Pre_Dehaze(Trainer):
         self.ckp.start_log(train=False)
         with torch.no_grad():
             tqdm_test = tqdm(self.loader_test, ncols=80)
-            for idx_img, (input, gt, filename) in enumerate(tqdm_test):
+            for _, (input, gt, filename) in enumerate(tqdm_test):
 
                 filename = filename[0]
                 input = input.to(self.device)
