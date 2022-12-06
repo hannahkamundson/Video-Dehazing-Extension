@@ -24,7 +24,9 @@ class Trainer_Pre_Dehaze(Trainer):
 
     def train(self):
         print("PreDehaze: Now training")
-        self.scheduler.step()
+
+        # This is where self.scheduler.step() was
+        
         epoch = self.scheduler.last_epoch + 1
         lr = self.scheduler.get_lr()[0]
         self.ckp.write_log('Epoch {:3d} with Lr {:.2e}'.format(epoch, decimal.Decimal(lr)))
@@ -52,6 +54,7 @@ class Trainer_Pre_Dehaze(Trainer):
                 loss_log['others'] = effective_mid_loss.item()
                 loss_log['Total'] = loss.item()
             loss.backward()
+            # This is where self.optimizer.step() was
             self.optimizer.step()
 
             self.ckp.report_log(loss_log)
@@ -67,7 +70,10 @@ class Trainer_Pre_Dehaze(Trainer):
                 self.model.save_now_model(apath=self.ckp.dir,
                                           flag='{}_{}'.format(epoch - 1, (batch + 1) // self.args.max_iter_save))
 
+        # This is where self.scheduler.step() was moved
+        self.scheduler.step()
         self.ckp.end_log(len(self.loader_train))
+        
 
     def test(self):
         print("PreDehaze: Now testing")
