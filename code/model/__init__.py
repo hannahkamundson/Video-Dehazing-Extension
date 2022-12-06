@@ -6,7 +6,7 @@ import torch.distributed as dist
 import torch.nn as nn
 
 
-
+# Model
 class Model(nn.Module):
     def __init__(self, args, ckp):
         super(Model, self).__init__()
@@ -19,8 +19,8 @@ class Model(nn.Module):
 
         module = import_module('model.' + args.model.lower())
         self.model = module.make_model(args).to(self.device)
-         if not args.cpu and args.n_GPUs > 1:
-             self.model = nn.DataParallel(self.model, range(args.n_GPUs))
+        if not args.cpu and args.n_GPUs > 1:
+            self.model = nn.DataParallel(self.model, range(args.n_GPUs))
 
         self.load(
             ckp.dir,

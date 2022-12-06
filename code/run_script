@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH -J odhaze
+#SBATCH -o /scratch/08310/rs821505/train_outputs/dehaze.o%j
+#SBATCH -e /scratch/08310/rs821505/train_outputs/dehaze.e%j
+#SBATCH -p gpu-a100
+#SBATCH -N 1
+#SBATCH -n 128
+#SBATCH -t 24:00:00
+
+#SBATCH --mail-user=myemail@test.edu
+#SBATCH --mail-type=begin        # email me when the job starts
+#SBATCH --mail-type=end          # email me when the job finishes
+
+
+python main.py --template Pre_Dehaze_revide
