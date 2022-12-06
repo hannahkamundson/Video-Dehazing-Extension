@@ -74,7 +74,7 @@ class Trainer_Pre_Dehaze(Trainer):
 
         # This is where self.scheduler.step() was moved
         self.scheduler.step()
-        
+
 
     def test(self):
         print("PreDehaze: Now testing")
