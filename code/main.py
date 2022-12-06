@@ -26,6 +26,8 @@ loader: data.Data = data.Data(train_dataset_name=args.data_train,
     is_cpu=args.cpu,
     namespace=args)
 
+if not args.cpu:
+    print(f'Running # GPUs: {torch.cuda.device_count()}')
 print("Selected task: {}".format(args.task))
 task_type: str = args.task
 if task_type == 'PreDehaze':
