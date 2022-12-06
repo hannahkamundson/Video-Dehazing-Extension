@@ -4,7 +4,13 @@ import os
 
 class REVIDE(imagedata.IMAGEDATA):
     def __init__(self, namespace, name='REVIDE', train=True):
-        super(REVIDE, self).__init__(args=namespace, name=name, train=train, clear_folder='gt', hazy_folder='hazy')
+        super(REVIDE, self).__init__(args=namespace, 
+            name=name, 
+            train=train, 
+            train_directory=namespace.dir_data,
+            test_directory=namespace.dir_data_test,
+            clear_folder='gt', 
+            hazy_folder='hazy')
 
     def _scan(self) -> list[str]:
         """

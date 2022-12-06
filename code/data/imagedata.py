@@ -120,17 +120,17 @@ class IMAGEDATA(data.Dataset):
     def get_patch(self, input, gt, size_must_mode=1):
         if self.train:
             input, gt = utils.get_patch(input, gt, patch_size=self.args.patch_size)
-            h, w, c = input.shape
+            h, w, _ = input.shape
             if h != self.args.patch_size or w != self.args.patch_size:
                 input = utils.bicubic_resize(input, size=(self.args.patch_size, self.args.patch_size))
                 gt = utils.bicubic_resize(gt, size=(self.args.patch_size, self.args.patch_size))
-                h, w, c = input.shape
+                h, w, _ = input.shape
             new_h, new_w = h - h % size_must_mode, w - w % size_must_mode
             input, gt = input[:new_h, :new_w, :], gt[:new_h, :new_w, :]
             if not self.args.no_augment:
                 input, gt = utils.data_augment(input, gt)
         else:
-            h, w, c = input.shape
+            h, w, _ = input.shape
             new_h, new_w = h - h % size_must_mode, w - w % size_must_mode
             input, gt = input[:new_h, :new_w, :], gt[:new_h, :new_w, :]
         return input, gt
