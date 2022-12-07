@@ -1,6 +1,7 @@
 from data import imagedata
 import glob
 import os
+import imageio
 
 class REVIDE(imagedata.IMAGEDATA):
     def __init__(self, namespace, name='REVIDE', train=True):
