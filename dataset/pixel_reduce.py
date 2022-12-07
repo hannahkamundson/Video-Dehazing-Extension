@@ -12,6 +12,7 @@ def listdir_nohidden(path):
 def pix_reduce(image_dir,reduce_dir):
     for _, dirr in enumerate(listdir_nohidden(image_dir)):
         in_dir = os.path.join(image_dir,dirr)
+        os.makedirs(os.path.join(reduce_dir,dirr))
         for i, image in enumerate(sorted(listdir_nohidden(in_dir))):
             # check if the image ends with png
             if (image.endswith(".JPG")):
@@ -19,7 +20,6 @@ def pix_reduce(image_dir,reduce_dir):
                 img_resized = img.resize((256, 256))
                 if i%10==0:
                     print(i,f"New size : {img_resized.size}")
-                os.makedirs(os.path.join(reduce_dir,dirr))
                 img_resized.save(os.path.join(reduce_dir,dirr,image))
 
 
