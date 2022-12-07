@@ -70,7 +70,12 @@ def set_template(args: Namespace) -> Namespace:
             args.data_test = 'REVIDE'
             # dir_data is the path to the training data
             args.dir_data = '../dataset/REVIDE/Train'
-
+        # REVIDE reduced dataset
+        elif template_type == "Pre_Dehaze_revidereduced":
+            args.data_train = 'REVIDE'
+            args.data_test = 'REVIDE'
+            # dir_data is the path to the training data
+            args.dir_data = '../dataset/REVIDE_REDUCED/Train'
         else:
             raise NotImplementedError('Template Pre Dehaze [{:s}] is not found'.format(args.template))
 
