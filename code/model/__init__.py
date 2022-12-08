@@ -35,9 +35,10 @@ class Model(nn.Module):
         self.model = module.make_model(args, dirs).to(self.device)
         
         # If we aren't using a CPU and we want more than one GPU
-        if not is_cpu and number_gpus > 1:
+        if self._is_parallel_execution():
             self.model = nn.DataParallel(self.model, range(number_gpus))
 
+        # Optionally load any pretrained/priorly trained models
         self.load(
             auto_load=auto_pre_train,
             pre_train=pre_train_path,
@@ -46,6 +47,9 @@ class Model(nn.Module):
             cpu=is_cpu,
         )
         print(self.get_model(), file=ckp.log_file)
+        
+    def _is_parallel_execution(self) -> bool:
+        return not self.cpu and self.n_GPUs > 1
 
     def forward(self, *args):
         """
@@ -54,7 +58,7 @@ class Model(nn.Module):
         return self.model(*args)
 
     def get_model(self):
-        if not self.cpu and self.n_GPUs > 1:
+        if self._is_parallel_execution():
             return self.model.module
         else:
             return self.model
