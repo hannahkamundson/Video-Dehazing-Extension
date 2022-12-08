@@ -24,6 +24,6 @@ def pix_reduce(image_dir,reduce_dir):
 
 
 if __name__ == "__main__":
-    inn = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE/Test/gt'
-    out = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED/Test/gt'
+    inn = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE/Train/gt'
+    out = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED/Train/gt'
     pix_reduce(inn,out)
