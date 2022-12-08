@@ -9,6 +9,20 @@ import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
+def _create_folder_structure(experiment_dir: str, dataset_name: str, template: str) -> str:
+    """
+    Return the folder structure to save stuff in.
+    
+    I want the path to look like this
+    | dataset (eg revide or revide_reduced)
+        | datetime
+              | Pre_Dehaze
+              | Dehaze 
+    """
+    trainer_type = 'Pre_Dehaze' if template.startswith('Pre_Dehaze') else 'Dehaze'
+
+    return os.path.join(experiment_dir, dataset_name, datetime.datetime.now().strftime('%Y%m%d_%H.%M'), trainer_type)
+
 
 class Logger:
     def __init__(self, args, init_loss_log):
@@ -18,12 +32,13 @@ class Logger:
         for key in init_loss_log.keys():
             self.loss_log[key] = torch.Tensor()
 
+        # If we aren't supposed to be loading anything
         if args.load == '.':
             if args.save == '.':
-                args.save = datetime.datetime.now().strftime('%Y%m%d_%H:%M')
-            self.dir = args.experiment_dir + args.save
+                args.save = 'UNSPECIFIED'
+            self.dir = _create_folder_structure(experiment_dir=args.experiment_dir, dataset_name=args.save, template=args.template)
         else:
-            self.dir = args.experiment_dir + args.load
+            self.dir = args.experiment_dir + args.load + datetime.datetime.now().strftime('%Y%m%d_%H.%M')
             if not os.path.exists(self.dir):
                 args.load = '.'
             else:
@@ -39,7 +54,7 @@ class Logger:
             print("Creating dir for saving images...", self.dir + '/result/' + self.args.data_test)
             os.makedirs(self.dir + '/result/' + self.args.data_test)
 
-        print('Save Path : {}'.format(self.dir))
+        print('Save Path : {}'.format(os.path.abspath(self.dir)))
 
         open_type = 'a' if os.path.exists(self.dir + '/log.txt') else 'w'
         self.log_file = open(self.dir + '/log.txt', open_type)

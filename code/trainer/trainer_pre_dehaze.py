@@ -108,6 +108,10 @@ class Trainer_Pre_Dehaze(Trainer):
         #         best[0], best[1] + 1))
         #     if not self.args.test_only:
         #         self.ckp.save(self, epoch, is_best=(best[1] + 1 == epoch))
+        print("Pre Dehaze: Skipping testing")
 
+        
+
+    def step_next(self):
         # This is where self.scheduler.step() was moved
         self.scheduler.step()
