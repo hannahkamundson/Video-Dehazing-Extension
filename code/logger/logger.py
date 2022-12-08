@@ -1,64 +1,63 @@
 import torch
-import imageio
 import numpy as np
 import os
-import datetime
+from data_dirs import DataDirectory
 
 import matplotlib
 
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 
-def _create_folder_structure(experiment_dir: str, dataset_name: str, template: str) -> str:
-    """
-    Return the folder structure to save stuff in.
-    
-    I want the path to look like this
-    | dataset (eg revide or revide_reduced)
-        | datetime
-              | Pre_Dehaze
-              | Dehaze 
-    """
-    trainer_type = 'Pre_Dehaze' if template.startswith('Pre_Dehaze') else 'Dehaze'
-
-    return os.path.join(experiment_dir, dataset_name, datetime.datetime.now().strftime('%Y%m%d_%H.%M'), trainer_type)
-
-
 class Logger:
-    def __init__(self, args, init_loss_log):
+    def __init__(self, 
+                 args, 
+                 init_loss_log,
+                 dirs: DataDirectory
+                 ):
+        """
+
+        Args:
+            args (_type_): _description_
+            init_loss_log (_type_): _description_
+            dirs (DataDirectory): The data directory that has access to where we are
+                storing/saving/loading things from
+        """
+        
+        self.dirs: DataDirectory = dirs
         self.args = args
         self.psnr_log = torch.Tensor()
         self.loss_log = {}
         for key in init_loss_log.keys():
             self.loss_log[key] = torch.Tensor()
+        
+        self.dir = dirs.base_directory
+            
+        # I don't fully understand what this is doing, but I think it is saying if we need
+        # to load the path, make sure the loading path exists. Otherwise, set it to not load
+        # It isn't clear to me where this is used later on but I haven't put a ton of energy 
+        # into searching.
+        if not args.load == '.' and os.path.exists(dirs.base_directory):
+            # Load stuff if we are continuing on from a previous run
+            self.loss_log = dirs.load_torch('loss_log.pt')
+            self.psnr_log = dirs.load_torch('psnr_log.pt')
+            print('Continue from epoch {}...'.format(len(self.psnr_log)))
 
-        # If we aren't supposed to be loading anything
-        if args.load == '.':
-            if args.save == '.':
-                args.save = 'UNSPECIFIED'
-            self.dir = _create_folder_structure(experiment_dir=args.experiment_dir, dataset_name=args.save, template=args.template)
-        else:
-            self.dir = args.experiment_dir + args.load + datetime.datetime.now().strftime('%Y%m%d_%H.%M')
-            if not os.path.exists(self.dir):
-                args.load = '.'
-            else:
-                self.loss_log = torch.load(self.dir + '/loss_log.pt')
-                self.psnr_log = torch.load(self.dir + '/psnr_log.pt')
-                print('Continue from epoch {}...'.format(len(self.psnr_log)))
+        # If the path doesn't exist, make it
+        dirs.make_base_directory()
+            
+        # If the model path doesn't exist, make it
+        dirs.create_directory_if_not_exists('model')
+            
+        # If the results path doesn't exist, make it
+        result_folder = os.path.join('result', args.data_test)
+        dirs.create_directory_if_not_exists(result_folder)
+        print("Creating dir for saving images...", dirs.get_path(result_folder))
+        
+        print('Save Path : {}'.format(dirs.get_absolute_base_path()))
 
-        if not os.path.exists(self.dir):
-            os.makedirs(self.dir)
-            if not os.path.exists(self.dir + '/model'):
-                os.makedirs(self.dir + '/model')
-        if not os.path.exists(self.dir + '/result/' + self.args.data_test):
-            print("Creating dir for saving images...", self.dir + '/result/' + self.args.data_test)
-            os.makedirs(self.dir + '/result/' + self.args.data_test)
-
-        print('Save Path : {}'.format(os.path.abspath(self.dir)))
-
-        open_type = 'a' if os.path.exists(self.dir + '/log.txt') else 'w'
-        self.log_file = open(self.dir + '/log.txt', open_type)
-        with open(self.dir + '/config.txt', open_type) as f:
+        open_type = 'a' if dirs.path_exists('log.txt') else 'w'
+        self.log_file = open(dirs.get_path('log.txt'), open_type)
+        with open(dirs.get_path('config.txt'), open_type) as f:
             f.write('From epoch {}...'.format(len(self.psnr_log)) + '\n\n')
             for arg in vars(args):
                 f.write('{}: {}\n'.format(arg, getattr(args, arg)))
@@ -69,24 +68,24 @@ class Logger:
         self.log_file.write(log + '\n')
 
     def save(self, trainer, epoch, is_best):
-        trainer.model.save(self.dir, epoch, is_best)
-        torch.save(self.loss_log, os.path.join(self.dir, 'loss_log.pt'))
-        torch.save(self.psnr_log, os.path.join(self.dir, 'psnr_log.pt'))
-        torch.save(trainer.optimizer.state_dict(), os.path.join(self.dir, 'optimizer.pt'))
+        trainer.model.save(self.dirs.get_absolute_base_path(), epoch, is_best)
+        # Save Torch stuff
+        self.dirs.save_torch('loss_log.pt', self.loss_log)
+        self.dirs.save_torch('psnr_log.pt', self.psnr_log)
+        self.dirs.save_torch('optimizer.pt', trainer.optimizer.state_dict())
         self.plot_loss_log(epoch)
         self.plot_psnr_log(epoch)
 
     def save_images(self, filename, save_list):
-        dirname = '{}/result/{}'.format(self.dir, self.args.data_test)
-        if not os.path.exists(dirname):
-            os.mkdir(dirname)
+        dirname = os.path.join('result', self.args.data_test)
+        self.dirs.create_directory_if_not_exists(dirname)
         filename = '{}/{}'.format(dirname, filename)
         if self.args.task == '.':
             postfix = ['combine']
         else:
             postfix = ['combine']
         for img, post in zip(save_list, postfix):
-            imageio.imwrite('{}_{}.png'.format(filename, post), img)
+            self.dirs.imageio_write(dirname, f'{filename}_{post}.png', img)
 
     def start_log(self, train=True):
         if train:
@@ -128,7 +127,7 @@ class Logger:
             plt.xlabel('Epochs')
             plt.ylabel('Loss')
             plt.grid(True)
-            plt.savefig(os.path.join(self.dir, 'loss_{}.pdf'.format(key)))
+            plt.savefig(self.dirs.get_path('loss_{}.pdf'.format(key)))
             plt.close(fig)
 
     def plot_psnr_log(self, epoch):
@@ -140,7 +139,7 @@ class Logger:
         plt.xlabel('Epochs')
         plt.ylabel('PSNR')
         plt.grid(True)
-        plt.savefig(os.path.join(self.dir, 'psnr.pdf'))
+        plt.savefig(self.dirs.get_path('psnr.pdf'))
         plt.close(fig)
 
     def done(self):

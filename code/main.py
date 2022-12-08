@@ -8,6 +8,7 @@ import option
 from trainer.trainer_dehaze import Trainer_Dehaze
 from trainer.trainer_pre_dehaze import Trainer_Pre_Dehaze
 from logger import logger
+from logger import data_dirs
 
 beginning_time = time.perf_counter()
 args = option.args
@@ -16,8 +17,11 @@ torch.manual_seed(args.seed)
 loss = loss.Loss(args)
 init_loss_log = loss.get_init_loss_log()
 
-chkp = logger.Logger(args, init_loss_log)
-model = model.Model(args, chkp)
+# Create info about the data directory structure
+dirs = data_dirs.DataDirectory(args)
+chkp = logger.Logger(args, init_loss_log, dirs)
+
+model = model.Model(args, chkp, dirs)
 loader: data.Data = data.Data(train_dataset_name=args.data_train, 
     test_dataset_name=args.data_test, 
     test_only=args.test_only,

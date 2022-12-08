@@ -67,8 +67,7 @@ class Trainer_Pre_Dehaze(Trainer):
                 ))
 
             if (batch + 1) % self.args.max_iter_save == 0:
-                self.model.save_now_model(apath=self.ckp.dir,
-                                          flag='{}_{}'.format(epoch - 1, (batch + 1) // self.args.max_iter_save))
+                self.model.save_now_model(flag='{}_{}'.format(epoch - 1, (batch + 1) // self.args.max_iter_save))
 
         self.ckp.end_log(len(self.loader_train))
 
@@ -107,11 +106,9 @@ class Trainer_Pre_Dehaze(Trainer):
         #         self.args.data_test, self.ckp.psnr_log[-1],
         #         best[0], best[1] + 1))
         #     if not self.args.test_only:
-        #         self.ckp.save(self, epoch, is_best=(best[1] + 1 == epoch))
+        #         self.ckp.save(epoch, is_best=(best[1] + 1 == epoch))
         print("Pre Dehaze: Skipping testing")
 
         
 
-    def step_next(self):
-        # This is where self.scheduler.step() was moved
-        self.scheduler.step()
+    

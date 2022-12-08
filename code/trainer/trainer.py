@@ -42,3 +42,19 @@ class Trainer:
         else:
             epoch = self.scheduler.last_epoch + 1
             return epoch >= self.args.epochs
+        
+    def step_next(self):
+        """
+        Step to the next stage after an epoch
+        """
+        if self.args.test_only:
+            return
+        else:
+            epoch = self.scheduler.last_epoch + 1
+            return epoch >= self.args.epochs
+        # This is where self.scheduler.step() was moved
+        self.scheduler.step()
+        
+        # If this was the last epoch
+        if self.terminate():
+            self.model.save_model_with_name('model_final.pt')

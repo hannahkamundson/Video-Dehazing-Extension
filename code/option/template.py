@@ -54,6 +54,8 @@ def set_template(args: Namespace) -> Namespace:
     template_type: str = args.template
     args = _set_base(args)
 
+    # Sorry this if statement is messy and def not DRY but I'm just keeping it how it is
+    # Be careful if you decide to change things cuz there is a lot of overlapping stuff
     if template_type.startswith('Pre_Dehaze'):
         args.task = "PreDehaze"
         args.model = "PRE_DEHAZE_T"
@@ -94,12 +96,29 @@ def set_template(args: Namespace) -> Namespace:
             raise NotImplementedError('Template Pre Dehaze [{:s}] is not found'.format(args.template))
 
         return args
-    elif template_type == 'ImageDehaze_SGID_PFF':
-        args.dir_data = baseResideTrainDSPath
+    elif template_type.startswith('Dehaze') or template_type == 'ImageDehaze_SGID_PFF':
+        args.other_loss = 'grad+refer+others'
         args.task = "ImageDehaze"
         args.model = "DEHAZE_SGID_PFF"
-        args.save = "ImageDehaze_SGID_PFF"
-        args.other_loss = 'grad+refer+others'
+        
+        # If it is what was used previously in the codebase, continue that
+        if template_type == 'ImageDehaze_SGID_PFF':
+            args.dir_data = baseResideTrainDSPath
+            args.save = "ImageDehaze_SGID_PFF"
+        # If it is the REVIDE reduced, do that
+        elif template_type == 'Dehaze_revidereduced':
+            # dir_data is the path to the training data
+            args.dir_data = '../dataset/REVIDE_REDUCED/Train'
+            args.save = DatasetName.REVIDE_REDUCED.name
+            args.data_train = 'REVIDE'
+            args.data_test = 'REVIDE'
+            
+            # We need to have an associated timestamp to read in the model
+            # This is required when we are saving in the logger that way we can save Pre_Dehaze with the
+            # Dehaze and keep everything organized
+            # Throw an error if there isn't one
+            if args.prev_timestamp is None:
+                raise ValueError("You need to have a previous timestamp if you are running Dehaze. Specify with command line --prev_timestamp")
 
         return args
     else:

@@ -70,46 +70,42 @@ class Trainer_Dehaze(Trainer):
                 ))
 
             if (batch + 1) % self.args.max_iter_save == 0:
-                self.model.save_now_model(apath=self.ckp.dir,
-                                          flag='{}_{}'.format(epoch - 1, (batch + 1) // self.args.max_iter_save))
+                self.model.save_now_model(flag='{}_{}'.format(epoch - 1, (batch + 1) // self.args.max_iter_save))
 
         self.ckp.end_log(len(self.loader_train))
 
     def test(self):
-        epoch = self.scheduler.last_epoch + 1
-        self.ckp.write_log('\nEvaluation:')
-        self.model.eval()
-        self.ckp.start_log(train=False)
-        with torch.no_grad():
-            tqdm_test = tqdm(self.loader_test, ncols=80)
-            for _, (input, gt, filename) in enumerate(tqdm_test):
+        # epoch = self.scheduler.last_epoch + 1
+        # self.ckp.write_log('\nEvaluation:')
+        # self.model.eval()
+        # self.ckp.start_log(train=False)
+        # with torch.no_grad():
+        #     tqdm_test = tqdm(self.loader_test, ncols=80)
+        #     for _, (input, gt, filename) in enumerate(tqdm_test):
 
-                filename = filename[0]
-                input = input.to(self.device)
-                gt = gt.to(self.device)
+        #         filename = filename[0]
+        #         input = input.to(self.device)
+        #         gt = gt.to(self.device)
 
-                _, output, trans, air, _ = self.model(input)
+        #         _, output, trans, air, _ = self.model(input)
 
-                PSNR = data_utils.calc_psnr(gt, output, rgb_range=self.args.rgb_range, )
-                self.ckp.report_log(PSNR, train=False)
+        #         PSNR = data_utils.calc_psnr(gt, output, rgb_range=self.args.rgb_range, )
+        #         self.ckp.report_log(PSNR, train=False)
 
-                if self.args.save_images:
-                    gt, input, output, trans, air = data_utils.postprocess(gt, input, output, trans, air,
-                                                                           rgb_range=self.args.rgb_range)
-                    combine1 = np.concatenate((input, output, gt), axis=1)
-                    combine2 = np.concatenate((trans, air, air), axis=1)
-                    combine = np.concatenate((combine1, combine2), axis=0)
-                    save_list = [combine]
-                    self.ckp.save_images(filename, save_list)
+        #         if self.args.save_images:
+        #             gt, input, output, trans, air = data_utils.postprocess(gt, input, output, trans, air,
+        #                                                                    rgb_range=self.args.rgb_range)
+        #             combine1 = np.concatenate((input, output, gt), axis=1)
+        #             combine2 = np.concatenate((trans, air, air), axis=1)
+        #             combine = np.concatenate((combine1, combine2), axis=0)
+        #             save_list = [combine]
+        #             self.ckp.save_images(filename, save_list)
 
-            self.ckp.end_log(len(self.loader_test), train=False)
-            best = self.ckp.psnr_log.max(0)
-            self.ckp.write_log('[{}]\taverage PSNR: {:.3f} (Best: {:.3f} @epoch {})'.format(
-                self.args.data_test, self.ckp.psnr_log[-1],
-                best[0], best[1] + 1))
-            if not self.args.test_only:
-                self.ckp.save(self, epoch, is_best=(best[1] + 1 == epoch))
-
-    def step_next(self):
-        # This is where self.scheduler.step() was moved
-        self.scheduler.step()
+        #     self.ckp.end_log(len(self.loader_test), train=False)
+        #     best = self.ckp.psnr_log.max(0)
+        #     self.ckp.write_log('[{}]\taverage PSNR: {:.3f} (Best: {:.3f} @epoch {})'.format(
+        #         self.args.data_test, self.ckp.psnr_log[-1],
+        #         best[0], best[1] + 1))
+        #     if not self.args.test_only:
+        #         self.ckp.save(self, epoch, is_best=(best[1] + 1 == epoch))
+        print("Pre Dehaze: Skipping testing")

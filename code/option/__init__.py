@@ -43,6 +43,10 @@ parser.add_argument('--model', default='.',
                     help='model name')
 parser.add_argument('--pre_train', type=str, default='.',
                     help='pre-trained model directory')
+parser.add_argument('--prev_timestamp', type=str,
+                    help='List the timestamp in the experiment directory that you want to use')
+parser.add_argument('--auto_pre_train', action='store_true',
+                    help='Auto load the pre trained model with the same timestamp')
 
 # Training specifications
 parser.add_argument('--test_every', type=int, default=1000,
@@ -95,6 +99,7 @@ parser.add_argument('--save_images', default=True, action='store_true',
                     help='save images')
 parser.add_argument('--max_iter_save', type=int, default=2000,
                     help='how many batches to wait before logging training status')
+
 
 args = parser.parse_args()
 args = template.set_template(args)

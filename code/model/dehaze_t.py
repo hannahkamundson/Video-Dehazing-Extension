@@ -45,7 +45,7 @@ class DEHAZE_T(nn.Module):
         self.smooth_loss = smooth_loss.Smooth_Loss()
 
     def forward(self, x, pre_est_J):
-        b, c, h, w = x.size()
+        b, _, h, w = x.size()
 
         x_feat = self.extra_feat(x)
         pre_est_J_feat = self.extra_feat(pre_est_J)
