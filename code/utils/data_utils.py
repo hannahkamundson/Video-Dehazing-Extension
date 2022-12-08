@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import math
 import cv2
+import torch
 
 
 def get_patch(*args, patch_size=17, scale=1):
@@ -57,7 +58,7 @@ def data_augment(*args, hflip=True, rot=True):
 
 
 def bicubic_resize(img, size=None):
-    h, w, c = img.shape
+    h, w, _ = img.shape
     if size is None:
         size = (w, h)
     bic_img = cv2.resize(img, size, interpolation=cv2.INTER_CUBIC)
@@ -90,3 +91,21 @@ def calc_psnr(img1, img2, rgb_range=1., shave=4):
         return 100
     PIXEL_MAX = 1
     return 20 * math.log10(PIXEL_MAX / math.sqrt(mse))
+
+def get_device_type(is_cpu: bool) -> str:
+    """
+    What device type are we using for torch?
+
+    Args:
+        is_cpu (bool): are we using a CPU?
+    """
+    return 'cpu' if is_cpu else 'cuda'
+
+def get_device(is_cpu: bool) -> torch.device:
+    """
+    Get the device based on whether it is a CPU or not
+
+    Args:
+        is_cpu (bool): are we using a CPU?
+    """
+    return torch.device(get_device_type(is_cpu))

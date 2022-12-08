@@ -20,7 +20,11 @@ init_loss_log = loss.get_init_loss_log()
 dirs = data_dirs.DataDirectory(args)
 chkp = logger.Logger(args, init_loss_log, dirs)
 
-model = model.Model(args, chkp, dirs)
+model = model.Model(is_cpu=args.cpu,
+                    number_gpus=args.n_GPUs,
+                    args=args, 
+                    ckp=chkp, 
+                    dirs=dirs)
 loader: data.Data = data.Data(train_dataset_name=args.data_train, 
     test_dataset_name=args.data_test, 
     test_only=args.test_only,

@@ -2,12 +2,13 @@ import os
 import torch
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
+from utils.data_utils import get_device
 
 
 class Trainer:
     def __init__(self, args, loader, my_model, my_loss, ckp):
         self.args = args
-        self.device = torch.device('cpu' if self.args.cpu else 'cuda')
+        self.device = get_device(self.args.cpu)
         self.loader_train = loader.loader_train
         self.loader_test = loader.loader_test
         self.model = my_model

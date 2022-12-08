@@ -1,6 +1,7 @@
 from importlib import import_module
 import torch
 import torch.nn as nn
+from utils.data_utils import get_device
 
 
 class Loss(nn.modules.loss._Loss):
@@ -8,7 +9,7 @@ class Loss(nn.modules.loss._Loss):
         super(Loss, self).__init__()
         print('Preparing loss function:')
 
-        device = torch.device('cpu' if args.cpu else 'cuda')
+        device = get_device(args.cpu)
 
         self.loss = []
         for loss in args.loss.split('+'):

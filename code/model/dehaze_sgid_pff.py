@@ -4,17 +4,17 @@ from model.pre_dehaze_t import PRE_DEHAZE_T
 from model.dehaze_t import DEHAZE_T
 from logger.data_dirs import DataDirectory
 import os
+from utils.data_utils import get_device_type
 
 
 def make_model(args, dirs: DataDirectory):
-    device = 'cpu' if args.cpu else 'cuda'
     pretrain_pre_dehaze_pt = args.pretrain_models_dir + 'pretrain_pre_dehaze_net.pt' if not args.test_only else '.'
     return DEHAZE_SGID_PFF(img_channels=args.n_colors, 
                            t_channels=args.t_channels, 
                            n_resblock=args.n_resblock,
                            n_feat=args.n_feat, 
                            pretrain_pre_dehaze_pt=pretrain_pre_dehaze_pt, 
-                           device=device,
+                           device=get_device_type(args.cpu),
                            auto_load_pretrained=args.auto_pre_train,
                            dirs=dirs)
 

@@ -7,13 +7,14 @@ from utils import data_utils
 from trainer.trainer import Trainer
 import torch.optim as optim
 from loss import gradient_loss
+from utils.data_utils import get_device_type
 
 
 class Trainer_Dehaze(Trainer):
     def __init__(self, args, loader, my_model, my_loss, ckp):
         super(Trainer_Dehaze, self).__init__(args, loader, my_model, my_loss, ckp)
         print("Using Trainer_Dehaze")
-        device = 'cpu' if args.cpu else 'cuda'
+        device = get_device_type(args.cpu)
         self.grad_loss = gradient_loss.Gradient_Loss(device=device)
         self.l1_loss = nn.L1Loss().to(device)
 

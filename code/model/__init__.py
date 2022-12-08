@@ -1,6 +1,7 @@
 import os
 from importlib import import_module
 from logger.data_dirs import DataDirectory
+from utils.data_utils import get_device
 
 import torch
 import torch.distributed as dist
@@ -9,18 +10,25 @@ import torch.nn as nn
 
 # Model
 class Model(nn.Module):
-    def __init__(self, args, ckp, dirs: DataDirectory):
+    def __init__(self, 
+                 is_cpu: bool,
+                 number_gpus: int,
+                 args, 
+                 ckp, 
+                 dirs: DataDirectory):
         super(Model, self).__init__()
         print('Making model...')
         self.args = args
-        self.cpu = args.cpu
-        self.device = torch.device('cpu' if args.cpu else 'cuda')
-        self.n_GPUs = args.n_GPUs
+        self.cpu = is_cpu
+        self.device = get_device(is_cpu)
+        self.n_GPUs = number_gpus
         self.save_middle_models = args.save_middle_models
         self.dirs = dirs
 
         module = import_module('model.' + args.model.lower())
         self.model = module.make_model(args, dirs).to(self.device)
+        
+        # If we aren't using a CPU and we want more than one GPU
         if not args.cpu and args.n_GPUs > 1:
             self.model = nn.DataParallel(self.model, range(args.n_GPUs))
 
