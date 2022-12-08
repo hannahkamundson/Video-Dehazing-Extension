@@ -47,14 +47,12 @@ class Trainer:
         """
         Step to the next stage after an epoch
         """
+        print("Stepping to next epoch")
         if self.args.test_only:
             return
-        else:
-            epoch = self.scheduler.last_epoch + 1
-            return epoch >= self.args.epochs
+        # If it will terminate on the next one, save the final model
+        # As in if this was the final epoch
+        elif self.scheduler.last_epoch + 2 >= self.args.epochs:
+            self.model.save_model_with_name('model_final.pt')
         # This is where self.scheduler.step() was moved
         self.scheduler.step()
-        
-        # If this was the last epoch
-        if self.terminate():
-            self.model.save_model_with_name('model_final.pt')

@@ -108,4 +108,4 @@ class Trainer_Dehaze(Trainer):
         #         best[0], best[1] + 1))
         #     if not self.args.test_only:
         #         self.ckp.save(self, epoch, is_best=(best[1] + 1 == epoch))
-        print("Pre Dehaze: Skipping testing")
+        print("Dehaze: Skipping testing")
