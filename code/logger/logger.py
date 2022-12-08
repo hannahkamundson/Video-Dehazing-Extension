@@ -73,8 +73,8 @@ class Logger:
         self.dirs.save_torch('loss_log.pt', self.loss_log)
         self.dirs.save_torch('psnr_log.pt', self.psnr_log)
         self.dirs.save_torch('optimizer.pt', trainer.optimizer.state_dict())
-        self.plot_loss_log(epoch)
-        self.plot_psnr_log(epoch)
+        # self.plot_loss_log(epoch)
+        # self.plot_psnr_log(epoch)
 
     def save_images(self, filename, save_list):
         dirname = os.path.join('result', self.args.data_test)
