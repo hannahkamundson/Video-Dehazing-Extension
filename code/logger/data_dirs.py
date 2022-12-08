@@ -53,13 +53,13 @@ class DataDirectory:
         
         if date_time is not None:
             # If the date_time was passed in, make sure it exists
-            if auto_pre_train and not os.path.exists(os.path.join(experiment_dir, dataset_name, timestamp)):
+            if auto_pre_train and not os.path.exists(os.path.join(experiment_dir, dataset_name, date_time)):
                 raise ValueError(f'The timestamp you specified does not exist but you are trying to auto load the pre trained model which requires it to exist {date_time}')
             
             # Make sure it doesn't already have the trainer type
-            if os.path.exists(os.path.join(experiment_dir, dataset_name, timestamp, trainer_type)):
+            if os.path.exists(os.path.join(experiment_dir, dataset_name, date_time, trainer_type)):
                 raise ValueError(f"The timestamp you specified already has the given template. Please provide a new" \
-                                f"timestamp or copy over the other so we can keep track of what we are doing. {timestamp} {template}")
+                                f"timestamp or copy over the other so we can keep track of what we are doing. {date_time} {template}")
             
         # If we are creating a new run, create the date time. Otherwise, use a previous one
         # For example, maybe we are running a Dehaze after a PreDehaze and want to store it in the same place                                 
