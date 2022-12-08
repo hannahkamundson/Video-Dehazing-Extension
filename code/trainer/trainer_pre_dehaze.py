@@ -73,8 +73,8 @@ class Trainer_Pre_Dehaze(Trainer):
 
 
     def test(self):
-        print("PreDehaze: Now testing")
-        epoch = self.scheduler.last_epoch + 1
+        # print("PreDehaze: Now testing")
+        # epoch = self.scheduler.last_epoch + 1
         # self.ckp.write_log('\nEvaluation:')
         # self.model.eval()
         # self.ckp.start_log(train=False)
@@ -107,5 +107,6 @@ class Trainer_Pre_Dehaze(Trainer):
         #         best[0], best[1] + 1))
         #     if not self.args.test_only:
         #         self.ckp.save(epoch, is_best=(best[1] + 1 == epoch))
-        if not self.args.test_only:
-            self.ckp.save(self, epoch, is_best=False)
+        # if not self.args.test_only:
+        #     self.ckp.save(self, epoch, is_best=False)
+        print("PreDehaze: Now testing")

@@ -56,3 +56,7 @@ class Trainer:
             self.model.save_model_with_name('model_final.pt')
         # This is where self.scheduler.step() was moved
         self.scheduler.step()
+        
+        epoch = self.scheduler.last_epoch + 1
+        if not self.args.test_only:
+            self.ckp.save(self, epoch, is_best=False)
