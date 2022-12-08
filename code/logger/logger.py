@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 import os
-from data_dirs import DataDirectory
+from logger.data_dirs import DataDirectory
 
 import matplotlib
 
