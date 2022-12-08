@@ -72,9 +72,9 @@ class Model(nn.Module):
 
         # If we should load the pre trained model from the default directory
         if auto_load:
-            print('Auto loading model from {}'.format(self.dirs.pre_dehaze_model_path('model_best')))
+            print('Auto loading model from {}'.format(self.dirs.pre_dehaze_model_path()))
             self.get_model().load_state_dict(
-                self.dirs.load_torch_from_pre_dehaze('model_best', **kwargs), strict=False
+                self.dirs.load_torch_from_pre_dehaze(**kwargs), strict=False
             )
         # If we should load the pre trained model from a specific spot
         elif pre_train != '.':

@@ -2,6 +2,8 @@ import torch.nn as nn
 import torch
 from model.pre_dehaze_t import PRE_DEHAZE_T
 from model.dehaze_t import DEHAZE_T
+from logger.data_dirs import DataDirectory
+import os
 
 
 def make_model(args):
@@ -12,13 +14,22 @@ def make_model(args):
                            n_resblock=args.n_resblock,
                            n_feat=args.n_feat, 
                            pretrain_pre_dehaze_pt=pretrain_pre_dehaze_pt, 
-                           device=device)
+                           device=device,
+                           auto_load_pretrained=args.auto_pre_train,
+                           dirs=DataDirectory(args))
 
 
 class DEHAZE_SGID_PFF(nn.Module):
 
-    def __init__(self, img_channels=3, t_channels=1, n_resblock=3, n_feat=32,
-                 pretrain_pre_dehaze_pt='.', device='cuda'):
+    def __init__(self, 
+                 auto_load_pretrained,
+                 dirs: DataDirectory,
+                 img_channels=3, 
+                 t_channels=1, 
+                 n_resblock=3, 
+                 n_feat=32,
+                 pretrain_pre_dehaze_pt='.', 
+                 device='cuda'):
         super(DEHAZE_SGID_PFF, self).__init__()
         print("Creating Dehaze-SGID-PFF Net")
         self.device = device
@@ -34,7 +45,10 @@ class DEHAZE_SGID_PFF(nn.Module):
                                n_feat=n_feat, 
                                device=device)
 
-        if pretrain_pre_dehaze_pt != '.':
+        if auto_load_pretrained:
+            self.pre_dehaze.load_state_dict(dirs.load_torch_from_pre_dehaze())
+            print('Auto loading pre dehaze model from {}'.format(os.path.abspath(dirs.pre_dehaze_model_path())))
+        elif pretrain_pre_dehaze_pt != '.':
             self.pre_dehaze.load_state_dict(torch.load(pretrain_pre_dehaze_pt))
             print('Loading pre dehaze model from {}'.format(pretrain_pre_dehaze_pt))
 

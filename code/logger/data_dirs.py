@@ -149,12 +149,12 @@ class DataDirectory:
         """
         return torch.load(os.path.join(self.base_directory, file_name))
     
-    def pre_dehaze_model_path(self, file_name: str) -> str:
+    def pre_dehaze_model_path(self) -> str:
         timestamp_dir = os.path.dirname(self.base_directory)
         pre_dehaze = os.path.join(timestamp_dir, PRE_DEHAZE_FOLDER_NAME)
-        return os.path.join(pre_dehaze, 'model', file_name)
+        return os.path.join(pre_dehaze, 'model', 'model_best.pt')
     
-    def load_torch_from_pre_dehaze(self, file_name: str, **kwargs):
-        model_file = self.pre_dehaze_model_path(file_name)
+    def load_torch_from_pre_dehaze(self, **kwargs):
+        model_file = self.pre_dehaze_model_path()
         
         return torch.load(model_file, **kwargs)
