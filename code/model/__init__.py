@@ -1,6 +1,7 @@
 import os
 from importlib import import_module
 from logger.data_dirs import DataDirectory
+from logger.logger import Logger
 from utils.data_utils import get_device
 
 import torch
@@ -13,34 +14,42 @@ class Model(nn.Module):
     def __init__(self, 
                  is_cpu: bool,
                  number_gpus: int,
-                 args, 
-                 ckp, 
+                 save_middle_models: bool,
+                 model_type: str,
+                 resume_previous_run: bool,
+                 auto_pre_train: bool,
+                 pre_train_path: str,
+                 test_only: bool,
+                 ckp: Logger, 
                  dirs: DataDirectory):
         super(Model, self).__init__()
         print('Making model...')
-        self.args = args
         self.cpu = is_cpu
         self.device = get_device(is_cpu)
         self.n_GPUs = number_gpus
-        self.save_middle_models = args.save_middle_models
+        self.save_middle_models = save_middle_models
         self.dirs = dirs
 
-        module = import_module('model.' + args.model.lower())
+        module = import_module('model.' + model_type.lower())
         self.model = module.make_model(args, dirs).to(self.device)
         
         # If we aren't using a CPU and we want more than one GPU
-        if not args.cpu and args.n_GPUs > 1:
-            self.model = nn.DataParallel(self.model, range(args.n_GPUs))
+        if not is_cpu and number_gpus > 1:
+            self.model = nn.DataParallel(self.model, range(number_gpus))
 
         self.load(
-            auto_load=args.auto_pre_train,
-            pre_train=args.pre_train,
-            resume=args.resume,
-            cpu=args.cpu,
+            auto_load=auto_pre_train,
+            pre_train=pre_train_path,
+            resume=resume_previous_run,
+            test_only=test_only,
+            cpu=is_cpu,
         )
         print(self.get_model(), file=ckp.log_file)
 
     def forward(self, *args):
+        """
+        Forward the model to the actual model we are wrapping
+        """
         return self.model(*args)
 
     def get_model(self):
@@ -72,7 +81,17 @@ class Model(nn.Module):
         self.dirs.save_torch_model(file_name=name,
                              contents=target.state_dict())
 
-    def load(self, auto_load, pre_train='.', resume=False, cpu=False):  #
+    def load(self, auto_load: bool, test_only: bool, pre_train='.', resume=False, cpu=False): 
+        """
+        Load a previous model if needed.
+
+        Args:
+            auto_load (bool): Should we be auto loading a pre dehaze based on the timestamp?
+            test_only (bool): Are we only doing testing?
+            pre_train (str, optional): Do we want to load a pre trained model from a specific path?
+            resume (bool, optional): Are we resuming a previous run? Defaults to False.
+            cpu (bool, optional): Is this running on a cpu? Defaults to False.
+        """
         if cpu:
             kwargs = {'map_location': lambda storage, loc: storage}
         else:
@@ -96,7 +115,7 @@ class Model(nn.Module):
                 torch.load(self.dirs.get_path(os.path.join('model', 'model_latest.pt')), **kwargs),
                 strict=False
             )
-        elif self.args.test_only:
+        elif test_only:
             self.get_model().load_state_dict(
                 torch.load(self.dirs.get_path(os.path.join('model', 'model_best.pt')), **kwargs),
                 strict=False

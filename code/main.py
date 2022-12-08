@@ -22,6 +22,12 @@ chkp = logger.Logger(args, init_loss_log, dirs)
 
 model = model.Model(is_cpu=args.cpu,
                     number_gpus=args.n_GPUs,
+                    save_middle_models=args.save_middle_models,
+                    model_type=args.model,
+                    resume_previous_run=args.resume,
+                    auto_pre_train=args.auto_pre_train,
+                    pre_train_path=args.pre_train,
+                    test_only=args.test_only,
                     args=args, 
                     ckp=chkp, 
                     dirs=dirs)
