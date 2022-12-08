@@ -2,7 +2,7 @@ import torch
 import time
 
 import data
-import model
+import model as md
 import loss
 import option
 from trainer.trainer_dehaze import Trainer_Dehaze
@@ -20,7 +20,8 @@ init_loss_log = loss.get_init_loss_log()
 dirs = data_dirs.DataDirectory(args)
 chkp = logger.Logger(args, init_loss_log, dirs)
 
-model = model.Model(is_cpu=args.cpu,
+# Load the appropriate model
+model = md.Model(is_cpu=args.cpu,
                     number_gpus=args.n_GPUs,
                     save_middle_models=args.save_middle_models,
                     model_type=args.model,
@@ -28,9 +29,10 @@ model = model.Model(is_cpu=args.cpu,
                     auto_pre_train=args.auto_pre_train,
                     pre_train_path=args.pre_train,
                     test_only=args.test_only,
-                    args=args, 
                     ckp=chkp, 
                     dirs=dirs)
+
+# Load the data
 loader: data.Data = data.Data(train_dataset_name=args.data_train, 
     test_dataset_name=args.data_test, 
     test_only=args.test_only,
