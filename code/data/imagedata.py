@@ -7,21 +7,31 @@ import torch.utils.data as data
 
 class IMAGEDATA(data.Dataset):
     def __init__(self, 
-        args, 
         name: str, 
+        patch_size: int,
+        load_all_on_ram: bool,
+        test_every_x_batch: int,
+        batch_size: int,
         train_directory: str,
         test_directory: str,
+        no_data_augmentation: bool,
+        size_must_mode: int,
+        max_rgb_value: int,
         train=True, 
         clear_folder: str='GT', 
         hazy_folder: str='INPUT'):
-
-        self.args = args
+        
         self.name = name
         self.train = train
         self.clear_folder = clear_folder
         self.hazy_folder = hazy_folder
+        self.patch_size = patch_size
+        self.size_must_mode = size_must_mode
+        self.max_rgb_value = max_rgb_value
         # Do you want to load all the data at once on RAM?
-        self.load_all_on_ram = args.process
+        self.load_all_on_ram = load_all_on_ram
+        # Do we want to use data augmentation?
+        self.no_data_augmentation = no_data_augmentation
 
         # Set the clear and hazy file systems
         # Choose a directory based on whether we are looking at the training dataset or the testing dataset
@@ -36,7 +46,7 @@ class IMAGEDATA(data.Dataset):
         print("Number of images to load:", self.num_image)
 
         if train:
-            self.repeat = max(args.test_every // max((self.num_image // args.batch_size), 1), 1)
+            self.repeat = max(test_every_x_batch // max((self.num_image // batch_size), 1), 1)
             print("Dataset repeat:", self.repeat)
 
         if self.load_all_on_ram:
@@ -84,8 +94,8 @@ class IMAGEDATA(data.Dataset):
         else:
             input, gt, filename = self._load_file(idx)
 
-        input, gt = self.get_patch(input, gt, self.args.size_must_mode)
-        input_tensor, gt_tensor = utils.np2Tensor(input, gt, rgb_range=self.args.rgb_range)
+        input, gt = self.get_patch(input, gt, self.size_must_mode)
+        input_tensor, gt_tensor = utils.np2Tensor(input, gt, rgb_range=self.max_rgb_value)
 
         return input_tensor, gt_tensor, filename
 
@@ -119,15 +129,15 @@ class IMAGEDATA(data.Dataset):
 
     def get_patch(self, input, gt, size_must_mode=1):
         if self.train:
-            input, gt = utils.get_patch(input, gt, patch_size=self.args.patch_size)
+            input, gt = utils.get_patch(input, gt, patch_size=self.patch_size)
             h, w, _ = input.shape
-            if h != self.args.patch_size or w != self.args.patch_size:
-                input = utils.bicubic_resize(input, size=(self.args.patch_size, self.args.patch_size))
-                gt = utils.bicubic_resize(gt, size=(self.args.patch_size, self.args.patch_size))
+            if h != self.patch_size or w != self.patch_size:
+                input = utils.bicubic_resize(input, size=(self.patch_size, self.patch_size))
+                gt = utils.bicubic_resize(gt, size=(self.patch_size, self.patch_size))
                 h, w, _ = input.shape
             new_h, new_w = h - h % size_must_mode, w - w % size_must_mode
             input, gt = input[:new_h, :new_w, :], gt[:new_h, :new_w, :]
-            if not self.args.no_augment:
+            if not self.no_data_augmentation:
                 input, gt = utils.data_augment(input, gt)
         else:
             h, w, _ = input.shape
