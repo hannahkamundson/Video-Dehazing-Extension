@@ -20,7 +20,11 @@ class Model(nn.Module):
         self.dirs = dirs
 
         module = import_module('model.' + args.model.lower())
-        self.model = module.make_model(args).to(self.device)
+        # Sorry super hacky
+        if args.model.lower == 'dehaze_sgid_pff':
+            self.model = module.make_model(args, dirs).to(self.device)
+        else:
+            self.model = module.make_model(args).to(self.device)
         if not args.cpu and args.n_GPUs > 1:
             self.model = nn.DataParallel(self.model, range(args.n_GPUs))
 

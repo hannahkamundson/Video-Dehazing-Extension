@@ -6,7 +6,7 @@ from logger.data_dirs import DataDirectory
 import os
 
 
-def make_model(args):
+def make_model(args, dirs: DataDirectory):
     device = 'cpu' if args.cpu else 'cuda'
     pretrain_pre_dehaze_pt = args.pretrain_models_dir + 'pretrain_pre_dehaze_net.pt' if not args.test_only else '.'
     return DEHAZE_SGID_PFF(img_channels=args.n_colors, 
@@ -16,7 +16,7 @@ def make_model(args):
                            pretrain_pre_dehaze_pt=pretrain_pre_dehaze_pt, 
                            device=device,
                            auto_load_pretrained=args.auto_pre_train,
-                           dirs=DataDirectory(args))
+                           dirs=dirs)
 
 
 class DEHAZE_SGID_PFF(nn.Module):
