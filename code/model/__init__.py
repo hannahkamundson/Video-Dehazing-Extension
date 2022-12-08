@@ -21,7 +21,8 @@ class Model(nn.Module):
                  pre_train_path: str,
                  test_only: bool,
                  ckp: Logger, 
-                 dirs: DataDirectory):
+                 dirs: DataDirectory,
+                 args):
         super(Model, self).__init__()
         print('Making model...')
         self.cpu = is_cpu

@@ -20,19 +20,20 @@ init_loss_log = loss.get_init_loss_log()
 dirs = data_dirs.DataDirectory(args)
 chkp = logger.Logger(args, init_loss_log, dirs)
 
-# Load the appropriate model
+# Load the model wrapper which chooses the appropriate model
 model = md.Model(is_cpu=args.cpu,
-                    number_gpus=args.n_GPUs,
-                    save_middle_models=args.save_middle_models,
-                    model_type=args.model,
-                    resume_previous_run=args.resume,
-                    auto_pre_train=args.auto_pre_train,
-                    pre_train_path=args.pre_train,
-                    test_only=args.test_only,
-                    ckp=chkp, 
-                    dirs=dirs)
+                 args=args,
+                 number_gpus=args.n_GPUs,
+                 save_middle_models=args.save_middle_models,
+                 model_type=args.model,
+                 resume_previous_run=args.resume,
+                 auto_pre_train=args.auto_pre_train,
+                 pre_train_path=args.pre_train,
+                 test_only=args.test_only,
+                 ckp=chkp, 
+                 dirs=dirs)
 
-# Load the data
+# Load the data based oin what type of data was specified
 loader: data.Data = data.Data(train_dataset_name=args.data_train, 
     test_dataset_name=args.data_test, 
     test_only=args.test_only,
@@ -43,6 +44,8 @@ loader: data.Data = data.Data(train_dataset_name=args.data_train,
 
 if not args.cpu:
     print(f'Running # GPUs: {torch.cuda.device_count()}')
+
+# Run the selected task
 print("Selected task: {}".format(args.task))
 task_type: str = args.task
 if task_type == 'PreDehaze':
@@ -52,11 +55,13 @@ elif task_type == 'ImageDehaze':
 else:
     raise NotImplementedError('Task [{:s}] is not found'.format(args.task))
 
+# While we haven't done all the epochs, train, test/validate, and step to the next epoch
 while not t.terminate():
     t.train()
     t.test()
     t.step_next()
 
+# Close out the logger
 chkp.done()
 
 end_time = time.perf_counter()
