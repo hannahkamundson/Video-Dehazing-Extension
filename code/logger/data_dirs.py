@@ -51,7 +51,7 @@ class DataDirectory:
         
         if date_time is not None:
             # If the date_time was passed in, make sure it exists
-            if not os.path.exists(os.path.join(experiment_dir, dataset_name, timestamp)):
+            if trainer_type == DEHAZE_FOLDER_NAME and not os.path.exists(os.path.join(experiment_dir, dataset_name, timestamp)):
                 raise ValueError(f'The timestamp you specified does not exist {date_time}')
             
             # Make sure it doesn't already have the trainer type
