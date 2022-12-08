@@ -1,4 +1,13 @@
 from argparse import Namespace
+from enum import Enum
+
+class DatasetName(Enum):
+    RESIDE_1 = 'RESIDE_1'
+    RESIDE_3 = 'RESIDE_3'
+    RESIDE_10 = 'RESIDE_10'
+    OHAZE = 'OHAZE'
+    REVIDE = 'REVIDE'
+    REVIDE_REDUCED = 'REVIDE_REDUCED'
 
 def _set_base(args: Namespace) -> Namespace:
     """
@@ -48,34 +57,39 @@ def set_template(args: Namespace) -> Namespace:
     if template_type.startswith('Pre_Dehaze'):
         args.task = "PreDehaze"
         args.model = "PRE_DEHAZE_T"
-        args.save = "Pre_Dehaze"
         args.other_loss = 'grad+others'
 
         # All of these are stored in the RESIDE path
         if template_type == 'Pre_Dehaze':
             print("Creating the template for Pre_Dehaze 1x1")
             args.dir_data = baseResideTrainDSPath
+            args.save = DatasetName.RESIDE_1.name
         elif template_type == 'Pre_Dehaze_3':
             print("Creating the template for Pre_Dehaze 3x3")
             args.dir_data = baseResideTrainDSPath + '_3'
+            args.save = DatasetName.RESIDE_3.name
         elif template_type == 'Pre_Dehaze_10':
             print("Creating the template for Pre_Dehaze 10x10")
             args.dir_data = baseResideTrainDSPath + '_10'
+            args.save = DatasetName.RESIDE_10.name
         # This one isn't RESIDE but we are still storing it in the same path
         elif template_type == "Pre_Dehaze_ohaze":
             args.dir_data = baseResideTrainDSPath + '_ohaze'
+            args.save = DatasetName.OHAZE.name
         # REVIDE dataset is really similar but we have a few more modifications so there is more here
         elif template_type == "Pre_Dehaze_revide":
             args.data_train = 'REVIDE'
             args.data_test = 'REVIDE'
             # dir_data is the path to the training data
             args.dir_data = '../dataset/REVIDE/Train'
+            args.save = DatasetName.REVIDE.name
         # REVIDE reduced dataset
         elif template_type == "Pre_Dehaze_revidereduced":
             args.data_train = 'REVIDE'
             args.data_test = 'REVIDE'
             # dir_data is the path to the training data
             args.dir_data = '../dataset/REVIDE_REDUCED/Train'
+            args.save = DatasetName.REVIDE_REDUCED.name
         else:
             raise NotImplementedError('Template Pre Dehaze [{:s}] is not found'.format(args.template))
 

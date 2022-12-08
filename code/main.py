@@ -40,6 +40,7 @@ else:
 while not t.terminate():
     t.train()
     t.test()
+    t.step_next()
 
 chkp.done()
 

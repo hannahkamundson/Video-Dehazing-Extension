@@ -26,7 +26,6 @@ class Trainer_Dehaze(Trainer):
 
     def train(self):
         print("Now training")
-        self.scheduler.step()
         epoch = self.scheduler.last_epoch + 1
         lr = self.scheduler.get_lr()[0]
         self.ckp.write_log('Epoch {:3d} with Lr {:.2e}'.format(epoch, decimal.Decimal(lr)))
@@ -83,7 +82,7 @@ class Trainer_Dehaze(Trainer):
         self.ckp.start_log(train=False)
         with torch.no_grad():
             tqdm_test = tqdm(self.loader_test, ncols=80)
-            for idx_img, (input, gt, filename) in enumerate(tqdm_test):
+            for _, (input, gt, filename) in enumerate(tqdm_test):
 
                 filename = filename[0]
                 input = input.to(self.device)
@@ -110,3 +109,7 @@ class Trainer_Dehaze(Trainer):
                 best[0], best[1] + 1))
             if not self.args.test_only:
                 self.ckp.save(self, epoch, is_best=(best[1] + 1 == epoch))
+
+    def step_next(self):
+        # This is where self.scheduler.step() was moved
+        self.scheduler.step()
