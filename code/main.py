@@ -7,8 +7,7 @@ import loss
 import option
 from trainer.trainer_dehaze import Trainer_Dehaze
 from trainer.trainer_pre_dehaze import Trainer_Pre_Dehaze
-from logger import logger
-from logger import data_dirs
+from logger import data_dirs, logger
 
 beginning_time = time.perf_counter()
 args = option.args
