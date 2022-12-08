@@ -68,7 +68,7 @@ class Logger:
         self.log_file.write(log + '\n')
 
     def save(self, trainer, epoch, is_best):
-        trainer.model.save(self.dirs.get_absolute_base_path(), epoch, is_best)
+        trainer.model.save(epoch, is_best)
         # Save Torch stuff
         self.dirs.save_torch('loss_log.pt', self.loss_log)
         self.dirs.save_torch('psnr_log.pt', self.psnr_log)
