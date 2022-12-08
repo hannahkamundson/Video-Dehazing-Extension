@@ -4,7 +4,7 @@ from model import trans
 from loss import smooth_loss
 
 
-def make_model(args):
+def make_model(args, dirs):
     device = 'cpu' if args.cpu else 'cuda'
     return PRE_DEHAZE_T(img_channels=args.n_colors, t_channels=args.t_channels, n_resblock=args.n_resblock,
                         n_feat=args.n_feat, device=device)

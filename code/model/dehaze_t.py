@@ -5,7 +5,7 @@ from loss import smooth_loss
 import model.blocks as blocks
 
 
-def make_model(args):
+def make_model(args, dirs):
     device = 'cpu' if args.cpu else 'cuda'
     return DEHAZE_T(img_channels=args.n_colors, t_channels=args.t_channels, n_resblock=args.n_resblock,
                     n_feat=args.n_feat, device=device)

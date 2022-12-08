@@ -3,7 +3,7 @@ import torch.nn as nn
 import model.unet as unet
 
 
-def make_model(args):
+def make_model(args, dirs):
     return TRANS(in_channels=args.n_colors, out_channels=args.t_channels, n_resblock=args.n_resblock, n_feat=args.n_feat)
 
 
