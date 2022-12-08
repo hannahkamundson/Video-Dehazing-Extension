@@ -32,12 +32,13 @@ class DataDirectory:
             return self._create_folder_structure(experiment_dir=args.experiment_dir, 
                                                 dataset_name=args.save, 
                                                 template=args.template,
-                                                date_time= args.prev_timestamp)
+                                                date_time= args.prev_timestamp,
+                                                auto_pre_train=args.auto_pre_train)
         # If we are loading a previous start and continuing from there
         else:
             return args.experiment_dir + args.load + datetime.datetime.now().strftime('%Y%m%d_%H.%M')
         
-    def _create_folder_structure(self, experiment_dir: str, dataset_name: str, template: str, date_time: str) -> str:
+    def _create_folder_structure(self, experiment_dir: str, dataset_name: str, template: str, date_time: str, auto_pre_train: bool) -> str:
         """
         Return the folder structure to save stuff in.
         
@@ -51,8 +52,8 @@ class DataDirectory:
         
         if date_time is not None:
             # If the date_time was passed in, make sure it exists
-            if trainer_type == DEHAZE_FOLDER_NAME and not os.path.exists(os.path.join(experiment_dir, dataset_name, timestamp)):
-                raise ValueError(f'The timestamp you specified does not exist {date_time}')
+            if auto_pre_train and not os.path.exists(os.path.join(experiment_dir, dataset_name, timestamp)):
+                raise ValueError(f'The timestamp you specified does not exist but you are trying to auto load the pre trained model which requires it to exist {date_time}')
             
             # Make sure it doesn't already have the trainer type
             if os.path.exists(os.path.join(experiment_dir, dataset_name, timestamp, trainer_type)):
