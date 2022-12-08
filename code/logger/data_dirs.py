@@ -14,6 +14,7 @@ class DataDirectory:
     """
     def __init__(self, args: Namespace):
         self.base_directory = self._create_base_directory(args)
+        print(f"Dirs: Creating data directory {self.base_directory}")
         # I don't fully understand what this is doing, but I think it is saying if we need
         # to load the path, make sure the loading path exists. Otherwise, set it to not load
         # It isn't clear to me where this is used later on but I haven't put a ton of energy 
