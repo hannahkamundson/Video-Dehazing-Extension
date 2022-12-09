@@ -166,8 +166,12 @@ class DataDirectory:
         return torch.load(model_file, **kwargs)
     
     def _make_path(self, path: str):
-        if self.should_write and not os.path.exists(path):
-            os.makedirs(path)
+        if self.should_write:
+            if not os.path.exists(path):
+                print(f"Data Dirs: making {path}")
+                os.makedirs(path)
+        else:
+            print(f"Data Dirs: skipping {path}")
         
         # Make everything wait here so we aren't moving forward before we should
         torch.distributed.barrier()
