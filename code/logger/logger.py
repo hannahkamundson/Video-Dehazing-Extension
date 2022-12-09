@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import os
 from logger.data_dirs import DataDirectory
-
+from par import DistributedManager
 import matplotlib
 
 matplotlib.use('Agg')
@@ -12,17 +12,16 @@ class Logger:
     def __init__(self, 
                  args, 
                  init_loss_log,
-                 dirs: DataDirectory
+                 dirs: DataDirectory,
+                 distributed_manager: DistributedManager
                  ):
         """
-
         Args:
             args (_type_): _description_
             init_loss_log (_type_): _description_
             dirs (DataDirectory): The data directory that has access to where we are
                 storing/saving/loading things from
         """
-        
         self.dirs: DataDirectory = dirs
         self.args = args
         self.psnr_log = torch.Tensor()
@@ -31,7 +30,8 @@ class Logger:
             self.loss_log[key] = torch.Tensor()
         
         self.dir = dirs.base_directory
-            
+        self.write_files = not distributed_manager.is_distributed or distributed_manager.is_parent_gpu()
+        
         # I don't fully understand what this is doing, but I think it is saying if we need
         # to load the path, make sure the loading path exists. Otherwise, set it to not load
         # It isn't clear to me where this is used later on but I haven't put a ton of energy 
@@ -55,26 +55,28 @@ class Logger:
         
         print('Save Path : {}'.format(dirs.get_absolute_base_path()))
 
-        open_type = 'a' if dirs.path_exists('log.txt') else 'w'
-        self.log_file = open(dirs.get_path('log.txt'), open_type)
-        with open(dirs.get_path('config.txt'), open_type) as f:
-            f.write('From epoch {}...'.format(len(self.psnr_log)) + '\n\n')
-            for arg in vars(args):
-                f.write('{}: {}\n'.format(arg, getattr(args, arg)))
-            f.write('\n')
+        if self.write_files:
+            open_type = 'a' if dirs.path_exists('log.txt') else 'w'
+            self.log_file = open(dirs.get_path('log.txt'), open_type)
+            with open(dirs.get_path('config.txt'), open_type) as f:
+                f.write('From epoch {}...'.format(len(self.psnr_log)) + '\n\n')
+                for arg in vars(args):
+                    f.write('{}: {}\n'.format(arg, getattr(args, arg)))
+                f.write('\n')
 
     def write_log(self, log):
         print(log)
         self.log_file.write(log + '\n')
 
     def save(self, trainer, epoch, is_best):
-        trainer.model.save(epoch, is_best)
-        # Save Torch stuff
-        self.dirs.save_torch('loss_log.pt', self.loss_log)
-        self.dirs.save_torch('psnr_log.pt', self.psnr_log)
-        self.dirs.save_torch('optimizer.pt', trainer.optimizer.state_dict())
-        # self.plot_loss_log(epoch)
-        # self.plot_psnr_log(epoch)
+        if self.write_files:
+            trainer.model.save(epoch, is_best)
+            # Save Torch stuff
+            self.dirs.save_torch('loss_log.pt', self.loss_log)
+            self.dirs.save_torch('psnr_log.pt', self.psnr_log)
+            self.dirs.save_torch('optimizer.pt', trainer.optimizer.state_dict())
+            # self.plot_loss_log(epoch)
+            # self.plot_psnr_log(epoch)
 
     def save_images(self, filename, save_list):
         dirname = os.path.join('result', self.args.data_test)
@@ -143,4 +145,5 @@ class Logger:
         plt.close(fig)
 
     def done(self):
-        self.log_file.close()
+        if self.write_files:
+            self.log_file.close()

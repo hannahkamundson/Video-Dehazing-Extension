@@ -1,5 +1,4 @@
 import decimal
-import torch
 import torch.nn as nn
 import numpy as np
 from tqdm import tqdm
@@ -8,11 +7,12 @@ from trainer.trainer import Trainer
 import torch.optim as optim
 from loss import gradient_loss
 from utils.data_utils import get_device_type
+from par import DistributedManager
 
 
 class Trainer_Dehaze(Trainer):
-    def __init__(self, args, loader, my_model, my_loss, ckp):
-        super(Trainer_Dehaze, self).__init__(args, loader, my_model, my_loss, ckp)
+    def __init__(self, args, loader, my_model, my_loss, ckp, distributed_manager: DistributedManager):
+        super(Trainer_Dehaze, self).__init__(args, loader, my_model, my_loss, ckp, distributed_manager)
         print("Using Trainer_Dehaze")
         device = get_device_type(args.cpu)
         self.grad_loss = gradient_loss.Gradient_Loss(device=device)
@@ -26,7 +26,7 @@ class Trainer_Dehaze(Trainer):
         return optimizer
 
     def train(self):
-        print("Now training")
+        print("Dehaze: Now training")
         epoch = self.scheduler.last_epoch + 1
         lr = self.scheduler.get_lr()[0]
         self.ckp.write_log('Epoch {:3d} with Lr {:.2e}'.format(epoch, decimal.Decimal(lr)))
@@ -75,7 +75,7 @@ class Trainer_Dehaze(Trainer):
 
         self.ckp.end_log(len(self.loader_train))
 
-    def test(self):
+    def do_validate(self):
         # print("Dehaze: Testing")
         # epoch = self.scheduler.last_epoch + 1
         # self.ckp.write_log('\nEvaluation:')

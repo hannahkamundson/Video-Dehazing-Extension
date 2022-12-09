@@ -3,10 +3,11 @@ import torch
 import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 from utils.data_utils import get_device
+from par import DistributedManager
 
 
 class Trainer:
-    def __init__(self, args, loader, my_model, my_loss, ckp):
+    def __init__(self, args, loader, my_model, my_loss, ckp, distributed_manager: DistributedManager):
         self.args = args
         self.device = get_device(self.args.cpu)
         self.loader_train = loader.loader_train
@@ -16,6 +17,7 @@ class Trainer:
         self.optimizer = self.make_optimizer()
         self.scheduler = self.make_scheduler()
         self.ckp = ckp
+        self.distributed_manager = distributed_manager
 
         if args.load != '.':
             self.optimizer.load_state_dict(torch.load(os.path.join(ckp.dir, 'optimizer.pt')))
@@ -33,16 +35,28 @@ class Trainer:
     def train(self):
         pass
 
-    def test(self):
+    def validate(self):
+        # Only validate if it is the parent GPU
+        if self.distributed_manager.is_parent_gpu():
+            self.do_validate()
+    
+    def do_validate(self):
         pass
+    
+    def get_last_started_epoch(self) -> int:
+        return self.scheduler.last_epoch
 
     def terminate(self):
         if self.args.test_only:
             self.test()
             return True
         else:
-            epoch = self.scheduler.last_epoch + 1
+            epoch = self.get_last_started_epoch()  + 1
             return epoch >= self.args.epochs
+        
+    def pre_train(self):
+        if self.distributed_manager.is_distributed:
+            self.loader_train.sampler.set_epoch(self.get_last_started_epoch() + 1)
         
     def step_next(self):
         """

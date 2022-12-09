@@ -1,16 +1,19 @@
 from importlib import import_module
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, distributed
 from argparse import Namespace
+from par import DistributedManager
 
 class Data:
     def __init__(self, 
-        train_dataset_name: str, 
-        test_dataset_name: str, 
-        test_only: bool, 
-        batch_size: int,
-        number_of_threads: int,
-        is_cpu: bool,
-        namespace: Namespace):
+                 train_dataset_name: str, 
+                 test_dataset_name: str,
+                 test_only: bool,
+                 batch_size: int,
+                 number_of_threads: int,
+                 is_cpu: bool,
+                 namespace: Namespace,
+                 distributed_manager: DistributedManager
+                 ):
         """
         Args:
             test_only: Do we only want to test the data (and not train it)?
@@ -34,7 +37,8 @@ class Data:
                 batch_size=batch_size,
                 is_cpu=is_cpu,
                 number_of_threads=number_of_threads,
-                namespace=self.args)
+                namespace=self.args,
+                distributed_manager=distributed_manager)
         
             
         # Load testing dataset
@@ -43,26 +47,54 @@ class Data:
             batch_size=1,
             is_cpu=is_cpu,
             number_of_threads=number_of_threads,
-            namespace=self.args
+            namespace=self.args,
+            distributed_manager=distributed_manager
             )
 
     def _create_loader(self,
-        is_train: bool,
-        dataset_name: str,
-        is_cpu: bool,
-        number_of_threads: int,
-        batch_size: int,
-        namespace: Namespace,
-        ) -> DataLoader:
+                       is_train: bool,
+                       dataset_name: str,
+                       is_cpu: bool,
+                       number_of_threads: int,
+                       batch_size: int,
+                       namespace: Namespace,
+                       distributed_manager: DistributedManager
+                       ) -> DataLoader:
         data_type = "training" if is_train else "testing"
         print(f'Data Manager: Loading the {data_type} dataset with name {dataset_name} batch size: {batch_size}, number of workers: {number_of_threads} and pin memory: {not is_cpu}')
 
         module = import_module('data.' + dataset_name.lower())
         dataset = getattr(module, dataset_name.upper())(namespace, name=dataset_name, train=is_train)
-        return DataLoader(
-            dataset=dataset,
-            batch_size=batch_size,
-            shuffle=is_train,
-            pin_memory=not is_cpu,
-            num_workers=number_of_threads
-        )
+        
+        
+        # If it is distributed and we are training, we need to load the data in a distributed fashion
+        if is_train and distributed_manager.is_distributed:
+            print("Data Manager: Creating distributed data loader for train")
+            # Ensures that each process gets differnt data from the batch.
+            sampler = distributed.DistributedSampler(dataset, 
+                                                     num_replicas=distributed_manager.total_gpus, 
+                                                     rank=distributed_manager.global_rank,
+                                                     drop_last=False)
+            
+            batch_size_per_gpu = int(batch_size/distributed_manager.gpus_per_node)
+            
+            return DataLoader(
+                dataset=dataset,
+                sampler=sampler,
+                batch_size=batch_size_per_gpu,
+                shuffle=False,
+                pin_memory=True,
+                num_workers=number_of_threads
+            )
+            
+            
+        # Otherwise, just load the data like normal
+        else:
+            print(f"Data Manager: Creating non distributed data loader for {'train' if is_train else 'test'}")
+            return DataLoader(
+                dataset=dataset,
+                batch_size=batch_size,
+                shuffle=is_train,
+                pin_memory=not is_cpu,
+                num_workers=number_of_threads
+            )

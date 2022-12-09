@@ -13,7 +13,7 @@ class Gradient_Loss(nn.Module):
         self.sobel_filter_Y = torch.from_numpy(self.sobel_filter_Y).float().to(device)
 
     def forward(self, output, gt):
-        b, c, h, w = output.size()
+        _, c, _, _ = output.size()
 
         output_X_c, output_Y_c = [], []
         gt_X_c, gt_Y_c = [], []

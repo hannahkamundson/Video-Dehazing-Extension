@@ -16,6 +16,28 @@ parser.add_argument('--n_GPUs', type=int, default=1,
 parser.add_argument('--seed', type=int, default=1,
                     help='random seed')
 
+# Multi node multi GPU processing
+parser.add_argument('--slurm_env_var', 
+                    action='store_true',
+                    default=False,
+                    help='Should we pull multi node/multi GPU info from SLRUM env vars?')
+parser.add_argument('--is_distributed', 
+                    action='store_true',
+                    default=False,
+                    help='Do you want this to be multi node multi GPU distributed?')
+parser.add_argument('--global_rank', 
+                    type=int, 
+                    help='The global rank of the GPU in comparison to all other GPUs')
+parser.add_argument('--local_rank', 
+                    type=int, 
+                    help='The local rank of the GPU in comparison to all GPUs on the same node')
+parser.add_argument('--gpu_per_node', 
+                    type=int, 
+                    help='The number of GPUs per node')
+parser.add_argument('--number_nodes', 
+                    type=int, 
+                    help='The number of nodes')
+
 # Data specifications
 parser.add_argument('--dir_data', type=str, default='.',
                     help='dataset directory')
