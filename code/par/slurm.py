@@ -14,7 +14,7 @@ def add_slurm_env_vars(args: Namespace) -> Namespace:
     args.global_rank = int(os.environ['SLURM_PROCID'])
     args.local_rank = int(os.environ['SLURM_LOCALID'])
     args.is_distributed = True
-    args.gpu_per_node = int(os.environ['SLURM_GPUS_PER_NODE'])
+    args.gpu_per_node = int(os.environ['SLURM_NTASKS_PER_NODE'])
     args.number_of_nodes = int(os.environ['SLURM_JOB_NUM_NODES'])
 
     return args
