@@ -174,4 +174,4 @@ class DataDirectory:
             print(f"Data Dirs: skipping {path}")
         
         # Make everything wait here so we aren't moving forward before we should
-        torch.distributed.barrier()
+        # torch.distributed.barrier()
