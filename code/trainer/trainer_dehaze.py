@@ -27,8 +27,8 @@ class Trainer_Dehaze(Trainer):
         return optimizer
 
     def train(self):
-        print_pretty("Dehaze: Now training")
         epoch = self.scheduler.last_epoch + 1
+        print_pretty(f"Dehaze: Now training for epoch {epoch}")
         lr = self.scheduler.get_lr()[0]
         self.ckp.write_log('Epoch {:3d} with Lr {:.2e}'.format(epoch, decimal.Decimal(lr)))
         self.model.train()

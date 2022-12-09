@@ -78,6 +78,7 @@ class Data:
                                                      drop_last=False)
             
             batch_size_per_gpu = int(batch_size/distributed_manager.gpus_per_node)
+            print_pretty(f"Data Manager: Original batch size was {batch_size} and this GPU will load {batch_size_per_gpu}")
             
             return DataLoader(
                 dataset=dataset,

@@ -55,9 +55,6 @@ def do_run(args: Namespace):
         namespace=args,
         distributed_manager=distributed_manager)
 
-    if not args.cpu:
-        print_pretty(f'Running # GPUs: {torch.cuda.device_count()}')
-
     # Run the selected task
     print_pretty("Selected task: {}".format(args.task))
     task_type: str = args.task
