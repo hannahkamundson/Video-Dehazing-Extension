@@ -31,7 +31,7 @@ def _set_base(args: Namespace) -> Namespace:
     args.lr = 1e-4
     args.lr_decay = 200
     args.epochs = 5
-    args.batch_size = 8
+    args.batch_size = 32*6
     args.mid_loss_weight = 0.05
     args.save_middle_models = True
     args.save_images = False

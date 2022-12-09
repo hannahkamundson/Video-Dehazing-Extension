@@ -27,5 +27,8 @@ echo "Parent Port="$MASTER_PORT
 ### init virtual environment if needed
 module add gcc
 
+# Give some details on pytorch distributed stuff
+export TORCH_DISTRIBUTED_DEBUG=INFO
+
 ### the command to run
 srun python main.py --slurm_env_var --template Pre_Dehaze_revidereduced
