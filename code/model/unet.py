@@ -1,5 +1,6 @@
 import torch.nn as nn
 import model.blocks as blocks
+from utils.print import print_pretty
 
 
 def make_model(args, dirs):
@@ -10,7 +11,7 @@ class UNet(nn.Module):
 
     def __init__(self, in_channels=3, out_channels=3, n_resblock=3, n_feat=32, kernel_size=5, feat_in=False):
         super(UNet, self).__init__()
-        print("Creating U-Net")
+        print_pretty("Creating U-Net")
 
         InBlock = []
         if not feat_in:

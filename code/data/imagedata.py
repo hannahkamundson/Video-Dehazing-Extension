@@ -3,6 +3,7 @@ import glob
 import imageio
 import utils.data_utils as utils
 import torch.utils.data as data
+from utils.print import print_pretty
 
 
 class IMAGEDATA(data.Dataset):
@@ -43,17 +44,17 @@ class IMAGEDATA(data.Dataset):
         self.images_gt, self.images_input = self._scan()
 
         self.num_image = len(self.images_gt)
-        print("Number of images to load:", self.num_image)
+        print_pretty("Number of images to load:", self.num_image)
 
         if train:
             self.repeat = max(test_every_x_batch // max((self.num_image // batch_size), 1), 1)
-            print("Dataset repeat:", self.repeat)
+            print_pretty("Dataset repeat:", self.repeat)
 
         if self.load_all_on_ram:
             self.data_gt, self.data_input = self._load(self.images_gt, self.images_input)
 
     def _set_filesystem(self, dir_data):
-        print("Loading {} => {} DataSet".format("train" if self.train else "test", self.name))
+        print_pretty("Loading {} => {} DataSet".format("train" if self.train else "test", self.name))
         # apath is just the path to the dataset. It should contain a "clear "images" folder and a 
         # "hazy images" folder, though they can be named different things depending on the child 
         # class' implementation
@@ -62,8 +63,8 @@ class IMAGEDATA(data.Dataset):
         # Set the clear path by getting the full path to the dataset + adding the clear folder to the end
         self.dir_gt = os.path.join(self.apath, self.clear_folder)
         self.dir_input = os.path.join(self.apath, self.hazy_folder)
-        print(f'DataSet clear/ground truth path:', self.dir_gt)
-        print(f'DataSet hazy/input path:', self.dir_input)
+        print_pretty(f'DataSet clear/ground truth path:', self.dir_gt)
+        print_pretty(f'DataSet hazy/input path:', self.dir_input)
 
     def _scan(self) -> tuple[list[str], list[str]]:
         """
@@ -79,7 +80,7 @@ class IMAGEDATA(data.Dataset):
         return names_gt, names_input
 
     def _load(self, names_gt, names_input):
-        print('Loading image dataset...')
+        print_pretty('Loading image dataset...')
         data_input = [imageio.imread(filename)[:, :, :3] for filename in names_input]
         data_gt = [imageio.imread(filename)[:, :, :3] for filename in names_gt]
         return data_gt, data_input

@@ -4,6 +4,7 @@ from model import trans
 from loss import smooth_loss
 import model.blocks as blocks
 from utils.data_utils import get_device_type
+from utils.print import print_pretty
 
 
 def make_model(args, dirs):
@@ -14,7 +15,7 @@ def make_model(args, dirs):
 class FusionModule(nn.Module):
     def __init__(self, n_feat, kernel_size=5):
         super(FusionModule, self).__init__()
-        print("Creating BRB-Fusion-Module")
+        print_pretty("Creating BRB-Fusion-Module")
         self.block1 = blocks.BinResBlock(n_feat, kernel_size=kernel_size)
         self.block2 = blocks.BinResBlock(n_feat, kernel_size=kernel_size)
 
@@ -31,7 +32,7 @@ class DEHAZE_T(nn.Module):
 
     def __init__(self, img_channels=3, t_channels=1, n_resblock=3, n_feat=32, device='cuda'):
         super(DEHAZE_T, self).__init__()
-        print("Creating Dehaze-T Net")
+        print_pretty("Creating Dehaze-T Net")
         self.device = device
 
         self.extra_feat = nn.Sequential(

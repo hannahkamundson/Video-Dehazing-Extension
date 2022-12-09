@@ -8,6 +8,7 @@ import math
 import time
 import argparse
 from model.dehaze_sgid_pff import DEHAZE_SGID_PFF
+from utils.print import print_pretty
 
 
 class Traverse_Logger:
@@ -17,7 +18,7 @@ class Traverse_Logger:
         self.log_file = open(self.log_file_path, open_type)
 
     def write_log(self, log):
-        print(log)
+        print_pretty(log)
         self.log_file.write(log + '\n')
 
 
@@ -34,18 +35,18 @@ class Inference:
 
         if not os.path.exists(self.result_path):
             os.mkdir(self.result_path)
-            print('mkdir: {}'.format(self.result_path))
+            print_pretty('mkdir: {}'.format(self.result_path))
 
         time_str = time.strftime("%Y-%m-%d %H-%M-%S", time.localtime())
         infer_flag = args.infer_flag if args.infer_flag != '.' else time_str
         self.result_path = os.path.join(self.result_path, 'infer_{}'.format(infer_flag))
         if not os.path.exists(self.result_path):
             os.mkdir(self.result_path)
-            print('mkdir: {}'.format(self.result_path))
+            print_pretty('mkdir: {}'.format(self.result_path))
         self.result_img_path = os.path.join(self.result_path, 'inference_image_{}'.format(time_str))
         if not os.path.exists(self.result_img_path):
             os.mkdir(self.result_img_path)
-            print('mkdir: {}'.format(self.result_img_path))
+            print_pretty('mkdir: {}'.format(self.result_img_path))
         self.logger = Traverse_Logger(self.result_path, 'inference_log_{}.txt'.format(time_str))
 
         self.logger.write_log('Inference - {}'.format(infer_flag))

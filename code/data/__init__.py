@@ -2,6 +2,7 @@ from importlib import import_module
 from torch.utils.data import DataLoader, distributed
 from argparse import Namespace
 from par import DistributedManager
+from utils.print import print_pretty
 
 class Data:
     def __init__(self, 
@@ -19,14 +20,14 @@ class Data:
             test_only: Do we only want to test the data (and not train it)?
             is_cpu: Are we running this on CPUs?
         """
-        print(f'Data Manager: Creating for train and test: {train_dataset_name} & {test_dataset_name}')
+        print_pretty(f'Data Manager: Creating for train and test: {train_dataset_name} & {test_dataset_name}')
         self.data_train: str = train_dataset_name
         self.data_test: str = test_dataset_name
         self.args: Namespace = namespace
 
         # If we are only doing tests
         if test_only:
-            print("Data Manager: Skipping train dataset load because user requested test only")
+            print_pretty("Data Manager: Skipping train dataset load because user requested test only")
             # Don't load the training loader
             self.loader_train = None
         # Otherwise, if we are doing training
@@ -61,7 +62,7 @@ class Data:
                        distributed_manager: DistributedManager
                        ) -> DataLoader:
         data_type = "training" if is_train else "testing"
-        print(f'Data Manager: Loading the {data_type} dataset with name {dataset_name} batch size: {batch_size}, number of workers: {number_of_threads} and pin memory: {not is_cpu}')
+        print_pretty(f'Data Manager: Loading the {data_type} dataset with name {dataset_name} batch size: {batch_size}, number of workers: {number_of_threads} and pin memory: {not is_cpu}')
 
         module = import_module('data.' + dataset_name.lower())
         dataset = getattr(module, dataset_name.upper())(namespace, name=dataset_name, train=is_train)
@@ -69,7 +70,7 @@ class Data:
         
         # If it is distributed and we are training, we need to load the data in a distributed fashion
         if is_train and distributed_manager.is_distributed:
-            print("Data Manager: Creating distributed data loader for train")
+            print_pretty("Data Manager: Creating distributed data loader for train")
             # Ensures that each process gets differnt data from the batch.
             sampler = distributed.DistributedSampler(dataset, 
                                                      num_replicas=distributed_manager.total_gpus, 
@@ -90,7 +91,7 @@ class Data:
             
         # Otherwise, just load the data like normal
         else:
-            print(f"Data Manager: Creating non distributed data loader for {'train' if is_train else 'test'}")
+            print_pretty(f"Data Manager: Creating non distributed data loader for {'train' if is_train else 'test'}")
             return DataLoader(
                 dataset=dataset,
                 batch_size=batch_size,

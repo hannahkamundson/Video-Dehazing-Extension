@@ -9,12 +9,13 @@ import torch.optim as optim
 from loss import gradient_loss
 from utils.data_utils import get_device_type
 from par import DistributedManager
+from utils.print import print_pretty
 
 
 class Trainer_Pre_Dehaze(Trainer):
     def __init__(self, args, loader, my_model, my_loss, ckp, distributed_manager: DistributedManager):
         super(Trainer_Pre_Dehaze, self).__init__(args, loader, my_model, my_loss, ckp, distributed_manager)
-        print("Using Trainer_Pre_Dehaze")
+        print_pretty("Using Trainer_Pre_Dehaze")
         device = get_device_type(args.cpu)
         self.grad_loss = gradient_loss.Gradient_Loss(device=device)
 
@@ -25,7 +26,7 @@ class Trainer_Pre_Dehaze(Trainer):
         return optimizer
 
     def train(self):
-        print("PreDehaze: Now training")
+        print_pretty("PreDehaze: Now training")
 
         # This is where self.scheduler.step() was
         
@@ -75,7 +76,7 @@ class Trainer_Pre_Dehaze(Trainer):
 
 
     def do_validate(self):
-        # print("PreDehaze: Now testing")
+        # print_pretty("PreDehaze: Now testing")
         # epoch = self.scheduler.last_epoch + 1
         # self.ckp.write_log('\nEvaluation:')
         # self.model.eval()
@@ -111,4 +112,4 @@ class Trainer_Pre_Dehaze(Trainer):
         #         self.ckp.save(epoch, is_best=(best[1] + 1 == epoch))
         # if not self.args.test_only:
         #     self.ckp.save(self, epoch, is_best=False)
-        print("PreDehaze: Now testing")
+        print_pretty("PreDehaze: Now testing")

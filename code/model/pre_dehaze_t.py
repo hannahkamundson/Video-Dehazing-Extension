@@ -3,6 +3,7 @@ import torch
 from model import trans
 from loss import smooth_loss
 from utils.data_utils import get_device_type
+from utils.print import print_pretty
 
 
 def make_model(args, dirs):
@@ -14,7 +15,7 @@ class PRE_DEHAZE_T(nn.Module):
 
     def __init__(self, img_channels=3, t_channels=1, n_resblock=3, n_feat=32, device='cuda'):
         super(PRE_DEHAZE_T, self).__init__()
-        print("Creating Pre-Dehaze-T Net")
+        print_pretty("Creating Pre-Dehaze-T Net")
         self.device = device
 
         self.trans_net = trans.TRANS(in_channels=img_channels, out_channels=t_channels,

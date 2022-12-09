@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import model.unet as unet
+from utils.print import print_pretty
 
 
 def make_model(args, dirs):
@@ -11,7 +12,7 @@ class TRANS(nn.Module):
 
     def __init__(self, in_channels=3, out_channels=1, n_resblock=3, n_feat=32, feat_in=False):
         super(TRANS, self).__init__()
-        print("Creating Trans Net")
+        print_pretty("Creating Trans Net")
 
         self.unet_body = unet.UNet(in_channels=in_channels, out_channels=out_channels,
                                    n_resblock=n_resblock, n_feat=n_feat, feat_in=feat_in)

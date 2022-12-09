@@ -5,6 +5,7 @@ from model.dehaze_t import DEHAZE_T
 from logger.data_dirs import DataDirectory
 import os
 from utils.data_utils import get_device_type
+from utils.print import print_pretty
 
 
 def make_model(args, dirs: DataDirectory):
@@ -31,7 +32,7 @@ class DEHAZE_SGID_PFF(nn.Module):
                  pretrain_pre_dehaze_pt='.', 
                  device='cuda'):
         super(DEHAZE_SGID_PFF, self).__init__()
-        print("Creating Dehaze-SGID-PFF Net")
+        print_pretty("Creating Dehaze-SGID-PFF Net")
         self.device = device
 
         self.pre_dehaze = PRE_DEHAZE_T(img_channels=img_channels, 
@@ -47,10 +48,10 @@ class DEHAZE_SGID_PFF(nn.Module):
 
         if auto_load_pretrained:
             self.pre_dehaze.load_state_dict(dirs.load_torch_from_pre_dehaze())
-            print('Auto loading pre dehaze model from {}'.format(os.path.abspath(dirs.pre_dehaze_model_path())))
+            print_pretty('Auto loading pre dehaze model from {}'.format(os.path.abspath(dirs.pre_dehaze_model_path())))
         elif pretrain_pre_dehaze_pt != '.':
             self.pre_dehaze.load_state_dict(torch.load(pretrain_pre_dehaze_pt))
-            print('Loading pre dehaze model from {}'.format(pretrain_pre_dehaze_pt))
+            print_pretty('Loading pre dehaze model from {}'.format(pretrain_pre_dehaze_pt))
 
     def forward(self, x):
         pre_est_J, _, _, _ = self.pre_dehaze(x)

@@ -10,6 +10,7 @@ from trainer.trainer_pre_dehaze import Trainer_Pre_Dehaze
 from logger import data_dirs, logger
 from argparse import Namespace
 from par import DistributedManager, create, slurm
+from utils.print import print_pretty
 
 
 def do_run(args: Namespace):
@@ -55,10 +56,10 @@ def do_run(args: Namespace):
         distributed_manager=distributed_manager)
 
     if not args.cpu:
-        print(f'Running # GPUs: {torch.cuda.device_count()}')
+        print_pretty(f'Running # GPUs: {torch.cuda.device_count()}')
 
     # Run the selected task
-    print("Selected task: {}".format(args.task))
+    print_pretty("Selected task: {}".format(args.task))
     task_type: str = args.task
     if task_type == 'PreDehaze':
         t = Trainer_Pre_Dehaze(args, loader, model, loss, chkp, distributed_manager)
@@ -84,6 +85,6 @@ args = option.args
 do_run(args)
 
 end_time = time.perf_counter()
-print(f"Ran in {end_time - beginning_time:0.4f} seconds")
+print_pretty(f"Ran in {end_time - beginning_time:0.4f} seconds")
     
 

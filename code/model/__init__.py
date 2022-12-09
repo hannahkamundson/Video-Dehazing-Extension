@@ -8,6 +8,7 @@ from par import DistributedManager
 
 import torch
 import torch.nn as nn
+from utils.print import print_pretty
 
 
 # Model
@@ -27,7 +28,7 @@ class Model(nn.Module):
                  distributed_manager: DistributedManager
                  ):
         super(Model, self).__init__()
-        print('Making model...')
+        print_pretty('Making model...')
         self.cpu = is_cpu
         self.device = get_device(is_cpu)
         self.n_GPUs = number_gpus
@@ -51,7 +52,7 @@ class Model(nn.Module):
         # If we aren't using a CPU and we want more than one GPU
         # Keeping this so it is backwards compatible but it is faster to use DistributedDataParallel
         elif self._is_old_parallel_execution():
-            print("Model: Warning, you are using DataParallel, but it is faster to use DistributedDataParallel")
+            print_pretty("Model: Warning, you are using DataParallel, but it is faster to use DistributedDataParallel")
             self.model = nn.DataParallel(self.model, range(number_gpus))
 
         # Optionally load any pretrained/priorly trained models
@@ -62,7 +63,7 @@ class Model(nn.Module):
             test_only=test_only,
             cpu=is_cpu,
         )
-        print(self.get_model(), file=ckp.log_file)
+        print_pretty(self.get_model(), file=ckp.log_file)
         
     def _is_old_parallel_execution(self) -> bool:
         return not self.cpu and self.n_GPUs > 1
@@ -123,18 +124,18 @@ class Model(nn.Module):
 
         # If we should load the pre trained model from the default directory
         if auto_load:
-            print('Auto loading model from {}'.format(self.dirs.pre_dehaze_model_path()))
+            print_pretty('Auto loading model from {}'.format(self.dirs.pre_dehaze_model_path()))
             self.get_model().load_state_dict(
                 self.dirs.load_torch_from_pre_dehaze(**kwargs), strict=False
             )
         # If we should load the pre trained model from a specific spot
         elif pre_train != '.':
-            print('Loading model from {}'.format(pre_train))
+            print_pretty('Loading model from {}'.format(pre_train))
             self.get_model().load_state_dict(
                 torch.load(pre_train, **kwargs), strict=False
             )
         elif resume:
-            print('Loading model from {}'.format(os.path.join('model', 'model_latest.pt')))
+            print_pretty('Loading model from {}'.format(os.path.join('model', 'model_latest.pt')))
             self.get_model().load_state_dict(
                 torch.load(self.dirs.get_path(os.path.join('model', 'model_latest.pt')), **kwargs),
                 strict=False

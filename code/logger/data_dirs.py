@@ -3,6 +3,7 @@ import os
 from argparse import Namespace
 import torch
 import imageio
+from utils.print import print_pretty
 
 PRE_DEHAZE_FOLDER_NAME = 'Pre_Dehaze'
 DEHAZE_FOLDER_NAME = 'Dehaze'
@@ -21,7 +22,7 @@ class DataDirectory:
         """
         self.should_write = should_write
         self.base_directory = self._create_base_directory(args)
-        print(f"Dirs: Creating data directory {self.base_directory}")
+        print_pretty(f"Dirs: Creating data directory {self.base_directory}")
         # I don't fully understand what this is doing, but I think it is saying if we need
         # to load the path, make sure the loading path exists. Otherwise, set it to not load
         # It isn't clear to me where this is used later on but I haven't put a ton of energy 
@@ -168,10 +169,10 @@ class DataDirectory:
     def _make_path(self, path: str):
         if self.should_write:
             if not os.path.exists(path):
-                print(f"Data Dirs: making {path}")
+                print_pretty(f"Data Dirs: making {path}")
                 os.makedirs(path)
         else:
-            print(f"Data Dirs: skipping {path}")
+            print_pretty(f"Data Dirs: skipping {path}")
         
         # Make everything wait here so we aren't moving forward before we should
         # torch.distributed.barrier()

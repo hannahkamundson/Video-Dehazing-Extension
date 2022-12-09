@@ -2,12 +2,13 @@ from importlib import import_module
 import torch
 import torch.nn as nn
 from utils.data_utils import get_device
+from utils.print import print_pretty
 
 
 class Loss(nn.modules.loss._Loss):
     def __init__(self, args):
         super(Loss, self).__init__()
-        print('Preparing loss function:')
+        print_pretty('Preparing loss function:')
 
         device = get_device(args.cpu)
 
@@ -32,7 +33,7 @@ class Loss(nn.modules.loss._Loss):
                 'weight': float(weight),
                 'function': loss_function}
             )
-            print('{:.3f} * {}'.format(float(weight), loss_type))
+            print_pretty('{:.3f} * {}'.format(float(weight), loss_type))
 
         self.other_loss_key = []
         for other_loss in args.other_loss.split('+'):

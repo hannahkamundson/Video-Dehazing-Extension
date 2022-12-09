@@ -4,6 +4,7 @@ import torch.optim as optim
 import torch.optim.lr_scheduler as lr_scheduler
 from utils.data_utils import get_device
 from par import DistributedManager
+from utils.print import print_pretty
 
 
 class Trainer:
@@ -62,7 +63,7 @@ class Trainer:
         """
         Step to the next stage after an epoch
         """
-        print("Stepping to next epoch")
+        print_pretty("Stepping to next epoch")
         if self.args.test_only:
             return
         # If it will terminate on the next one, save the final model

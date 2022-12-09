@@ -4,6 +4,7 @@ import os
 from logger.data_dirs import DataDirectory
 from par import DistributedManager
 import matplotlib
+from utils.print import print_pretty
 
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
@@ -40,7 +41,7 @@ class Logger:
             # Load stuff if we are continuing on from a previous run
             self.loss_log = dirs.load_torch('loss_log.pt')
             self.psnr_log = dirs.load_torch('psnr_log.pt')
-            print('Continue from epoch {}...'.format(len(self.psnr_log)))
+            print_pretty('Continue from epoch {}...'.format(len(self.psnr_log)))
 
         # If the path doesn't exist, make it
         dirs.make_base_directory()
@@ -51,9 +52,9 @@ class Logger:
         # If the results path doesn't exist, make it
         result_folder = os.path.join('result', args.data_test)
         dirs.create_directory_if_not_exists(result_folder)
-        print("Creating dir for saving images...", dirs.get_path(result_folder))
+        print_pretty("Creating dir for saving images...", dirs.get_path(result_folder))
         
-        print('Save Path : {}'.format(dirs.get_absolute_base_path()))
+        print_pretty('Save Path : {}'.format(dirs.get_absolute_base_path()))
 
         if self.write_files:
             open_type = 'a' if dirs.path_exists('log.txt') else 'w'
@@ -65,7 +66,7 @@ class Logger:
                 f.write('\n')
 
     def write_log(self, log):
-        print(log)
+        print_pretty(log)
         self.log_file.write(log + '\n')
 
     def save(self, trainer, epoch, is_best):
@@ -119,7 +120,7 @@ class Logger:
 
     def plot_loss_log(self, epoch):
         axis = np.linspace(1, epoch, epoch)
-        print(f'Logger: loss log: {self.loss_log}')
+        print_pretty(f'Logger: loss log: {self.loss_log}')
         for key in self.loss_log.keys():
             label = '{} Loss'.format(key)
             fig = plt.figure()
