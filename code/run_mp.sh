@@ -28,4 +28,4 @@ echo "Parent Port="$MASTER_PORT
 module add gcc
 
 ### the command to run
-srun python main.py --add_slurm_env_vars --template Pre_Dehaze_revidereduced
+srun python main.py --slurm_env_var --template Pre_Dehaze_revidereduced
