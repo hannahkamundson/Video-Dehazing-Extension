@@ -75,10 +75,13 @@ def do_run(args: Namespace):
     # Close out the logger
     chkp.done()
 
-def main():
-    beginning_time = time.perf_counter()
-    args = option.args
-    do_run(args)
 
-    end_time = time.perf_counter()
-    print(f"Ran in {end_time - beginning_time:0.4f} seconds")
+# Run the script
+beginning_time = time.perf_counter()
+args = option.args
+do_run(args)
+
+end_time = time.perf_counter()
+print(f"Ran in {end_time - beginning_time:0.4f} seconds")
+    
+
