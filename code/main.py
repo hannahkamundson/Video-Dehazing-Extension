@@ -3,7 +3,7 @@ import time
 
 import data
 import model as md
-import loss as ls
+from loss import Loss
 import option
 from trainer.trainer_dehaze import Trainer_Dehaze
 from trainer.trainer_pre_dehaze import Trainer_Pre_Dehaze
@@ -21,8 +21,8 @@ def do_run(args: Namespace):
         
     distributed_manager: DistributedManager = create(args)
 
-    loss = loss.Loss(args)
-    init_loss_log = ls.get_init_loss_log()
+    loss = Loss(args)
+    init_loss_log = loss.get_init_loss_log()
 
     # Create info about the data directory structure
     dirs = data_dirs.DataDirectory(args)
