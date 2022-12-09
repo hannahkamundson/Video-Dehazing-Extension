@@ -12,7 +12,14 @@ class DataDirectory:
     This class holds info about our data directory process.
     If you want to load something from torch, do it through this class
     """
-    def __init__(self, args: Namespace):
+    def __init__(self, args: Namespace, should_write: bool):
+        """_summary_
+
+        Args:
+            should_write (bool): Is it okay for this data directory to write out? For example, only one GPU should write the folders
+                if it is multi node multi GPU
+        """
+        self.should_write = should_write
         self.base_directory = self._create_base_directory(args)
         print(f"Dirs: Creating data directory {self.base_directory}")
         # I don't fully understand what this is doing, but I think it is saying if we need
@@ -20,7 +27,7 @@ class DataDirectory:
         # It isn't clear to me where this is used later on but I haven't put a ton of energy 
         # into searching.
         if not args.load == '.' and not os.path.exists(self.base_directory):
-            args.load = '.'
+            args.load = '.'      
 
     def _create_base_directory(self, args: Namespace) -> str:
         """
@@ -74,17 +81,16 @@ class DataDirectory:
         Args:
             folder (str): The folder you want to add to the base path
         """
-        dir_with_folder: str = os.path.join(self.base_directory, folder)
-        if not os.path.exists(dir_with_folder):
-            os.makedirs(dir_with_folder)
+        if self.should_write:
+            dir_with_folder: str = os.path.join(self.base_directory, folder)
+            self._make_path(dir_with_folder)
             
     def make_base_directory(self):
         """
         Make the base directory if it doesn't already exist.
         This should probably only be called once
         """
-        if not os.path.exists(self.base_directory):
-            os.makedirs(self.base_directory)
+        self._make_path(self.base_directory)
     
     def save_torch(self, file_name: str, contents, folder_path = None):
         """
@@ -158,3 +164,10 @@ class DataDirectory:
         model_file = self.pre_dehaze_model_path()
         
         return torch.load(model_file, **kwargs)
+    
+    def _make_path(self, path: str):
+        if self.should_write and not os.path.exists(path):
+            os.makedirs(path)
+        
+        # Make everything wait here so we aren't moving forward before we should
+        torch.distributed.barrier()

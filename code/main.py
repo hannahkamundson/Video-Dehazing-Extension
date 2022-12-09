@@ -25,7 +25,9 @@ def do_run(args: Namespace):
     init_loss_log = loss.get_init_loss_log()
 
     # Create info about the data directory structure
-    dirs = data_dirs.DataDirectory(args)
+    dirs = data_dirs.DataDirectory(args,
+                                   # Only write if it isn't distributed or it is the parent gpu
+                                   should_write=not distributed_manager.is_distributed or distributed_manager.is_parent_gpu())
     chkp = logger.Logger(args, init_loss_log, dirs, distributed_manager=distributed_manager)
 
     # Load the model wrapper which chooses the appropriate model
