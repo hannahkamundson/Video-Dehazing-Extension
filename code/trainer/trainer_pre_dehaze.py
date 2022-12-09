@@ -61,7 +61,7 @@ class Trainer_Pre_Dehaze(Trainer):
 
             self.ckp.report_log(loss_log)
 
-            if (batch + 1) % self.args.print_every == 0 and self.distributed_manager.:
+            if (batch + 1) % self.args.print_every == 0 and self.distributed_manager.is_parent_gpu():
                 self.ckp.write_log('[{}/{}]\tLoss : {}'.format(
                     (batch + 1) * self.args.batch_size,
                     len(self.loader_train.dataset),
