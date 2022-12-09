@@ -3,8 +3,8 @@
 #SBATCH -p gpu-a100
 #SBATCH --time=05:00:00
 
-#SBATCH -o /scratch/08310/rs821505/train_outputs/full_runs/dehaze_multi.o%j
-#SBATCH -e /scratch/08310/rs821505/train_outputs/full_runs/dehaze_multi.e%j
+#SBATCH -o /scratch/08310/rs821505/train_outputs/run_mp.o%j
+#SBATCH -e /scratch/08310/rs821505/train_outputs/run_mp.e%j
 
 ### e.g. request 4 nodes with 1 gpu each, totally 4 gpus (WORLD_SIZE==4)
 ### Note: --gres=gpu:x should equal to ntasks-per-node
