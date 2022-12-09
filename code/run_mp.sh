@@ -26,7 +26,6 @@ echo "Parent Port="$MASTER_PORT
 
 ### init virtual environment if needed
 module add gcc
-conda activate hazy3
 
 ### the command to run
 srun python main.py --add_slurm_env_vars --template Pre_Dehaze_revidereduced
