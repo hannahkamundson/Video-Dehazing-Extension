@@ -66,8 +66,9 @@ class Logger:
                 f.write('\n')
 
     def write_log(self, log):
-        print_pretty(log)
-        self.log_file.write(log + '\n')
+        if self.write_files:
+            print_pretty(log)
+            self.log_file.write(log + '\n')
 
     def save(self, trainer, epoch, is_best):
         if self.write_files:

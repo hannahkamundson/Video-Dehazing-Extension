@@ -63,7 +63,9 @@ class Model(nn.Module):
             test_only=test_only,
             cpu=is_cpu,
         )
-        print_pretty(self.get_model(), file=ckp.log_file)
+        
+        if self.write_files:
+            print_pretty("Model: checkpoint log file", self.get_model(), file=ckp.log_file)
         
     def _is_old_parallel_execution(self) -> bool:
         return not self.cpu and self.n_GPUs > 1
