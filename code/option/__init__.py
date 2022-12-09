@@ -31,7 +31,7 @@ parser.add_argument('--global_rank',
 parser.add_argument('--local_rank', 
                     type=int, 
                     help='The local rank of the GPU in comparison to all GPUs on the same node')
-parser.add_argument('--gpu_per_node', 
+parser.add_argument('--gpus_per_node', 
                     type=int, 
                     help='The number of GPUs per node')
 parser.add_argument('--number_nodes', 
