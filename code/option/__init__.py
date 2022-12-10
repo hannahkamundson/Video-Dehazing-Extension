@@ -115,7 +115,7 @@ parser.add_argument('--load', type=str, default='.',
                     help='file name to load')
 parser.add_argument('--resume', action='store_true',
                     help='resume from the latest if true')
-parser.add_argument('--print_every', type=int, default=100,
+parser.add_argument('--print_every', type=int, default=10,
                     help='how many batches to wait before logging training status')
 parser.add_argument('--save_images', default=True, action='store_true',
                     help='save images')
