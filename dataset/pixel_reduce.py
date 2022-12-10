@@ -19,7 +19,7 @@ def pix_reduce(image_dir, reduce_dir):
             # check if the image ends with png
             if (image.endswith(".JPG")):
                 img = Image.open(os.path.join(in_dir, image))
-                img_resized = img.resize((256, 256))
+                img_resized = img.resize((128, 128))
                 if i % 10 == 0:
                     print(i, f"New size : {img_resized.size}")
                 img_resized.save(os.path.join(reduce_dir, dirr, image))
@@ -27,5 +27,17 @@ def pix_reduce(image_dir, reduce_dir):
 
 if __name__ == "__main__":
     inn = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE/Train/gt'
-    out = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED/Train/gt'
+    out = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED_AGAIN/Train/gt'
+    pix_reduce(inn,out)
+    
+    inn = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE/Train/hazy'
+    out = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED_AGAIN/Train/hazy'
+    pix_reduce(inn,out)
+    
+    inn = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE/Test/gt'
+    out = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED_AGAIN/Test/gt'
+    pix_reduce(inn,out)
+    
+    inn = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE/Test/hazy'
+    out = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED_AGAIN/Test/hazy'
     pix_reduce(inn,out)
