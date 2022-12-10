@@ -3,6 +3,8 @@ from torch.utils.data import DataLoader, distributed
 from argparse import Namespace
 from par import DistributedManager
 from utils.print import print_pretty
+from time import time
+import multiprocessing as mp
 
 class Data:
     def __init__(self, 
@@ -70,7 +72,8 @@ class Data:
         
         # If it is distributed and we are training, we need to load the data in a distributed fashion
         if is_train and distributed_manager.is_distributed:
-            print_pretty("Data Manager: Creating distributed data loader for train")
+            print_pretty("Data Manager: Creating distributed data loader for train\n")
+            print_pretty(f"Total Numberof Gpus in sampler:{distributed_manager.total_gpus}\n")
             # Ensures that each process gets differnt data from the batch.
             sampler = distributed.DistributedSampler(dataset, 
                                                      num_replicas=distributed_manager.total_gpus, 
@@ -79,14 +82,15 @@ class Data:
             
             batch_size_per_gpu = int(batch_size/distributed_manager.gpus_per_node)
             print_pretty(f"Data Manager: Original batch size was {batch_size} and this GPU will load {batch_size_per_gpu}")
-            
+            print_pretty(f"World_size: {distributed_manager.total_gpus}\n")
+            dload_test(dataset) 
             return DataLoader(
                 dataset=dataset,
                 sampler=sampler,
-                batch_size=batch_size_per_gpu,
+                batch_size=64,
                 shuffle=False,
                 pin_memory=True,
-                num_workers=number_of_threads
+                num_workers=36
             )
             
             
@@ -95,8 +99,24 @@ class Data:
             print_pretty(f"Data Manager: Creating non distributed data loader for {'train' if is_train else 'test'}")
             return DataLoader(
                 dataset=dataset,
-                batch_size=batch_size,
+                batch_size=64,
                 shuffle=is_train,
                 pin_memory=not is_cpu,
-                num_workers=number_of_threads
+                num_workers=36
             )
+
+
+
+
+
+'''
+def dload_test(dataset):
+    for num_workers in range(2, mp.cpu_count(), 2):  
+        train_loader = DataLoader(dataset,shuffle=False,num_workers=num_workers,batch_size=64,pin_memory=True)
+    start = time()
+    for epoch in range(1, 3):
+        for i, data in enumerate(train_loader, 0):
+            pass
+    end = time()
+    print_pretty("Finish with:{} second, num_workers={}\n".format(end - start, num_workers))
+'''

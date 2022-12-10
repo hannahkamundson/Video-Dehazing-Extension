@@ -19,7 +19,10 @@ def do_run(args: Namespace):
     # If we should be adding slurm variables to the namespace, do it
     if args.slurm_env_var:
         args = slurm.add_slurm_env_vars(args)
-        
+    
+    # Read out input slurm arguments
+    print_pretty(args)
+   
     distributed_manager: DistributedManager = create(args)
 
     loss = Loss(args)
@@ -56,7 +59,7 @@ def do_run(args: Namespace):
         distributed_manager=distributed_manager)
 
     # Run the selected task
-    print_pretty("Selected task: {}".format(args.task))
+    print_pretty("Selected task: {}\n".format(args.task))
     task_type: str = args.task
     if task_type == 'PreDehaze':
         t = Trainer_Pre_Dehaze(args, loader, model, loss, chkp, distributed_manager)
