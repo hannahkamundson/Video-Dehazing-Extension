@@ -6,7 +6,7 @@
 #SBATCH -o /scratch/08310/rs821505/train_outputs/run_mp.o%j
 #SBATCH -e /scratch/08310/rs821505/train_outputs/run_mp.e%j
 
-#SBATCH --nodes=4
+#SBATCH --nodes=2
 #SBATCH --ntasks-per-node=3
 #SBATCH --cpus-per-task=40
 
