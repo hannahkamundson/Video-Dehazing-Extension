@@ -71,7 +71,7 @@ parser.add_argument('--auto_pre_train', action='store_true',
                     help='Auto load the pre trained model with the same timestamp')
 
 # Training specifications
-parser.add_argument('--test_every', type=int, default=1000,
+parser.add_argument('--test_every', type=int, default=100,
                     help='do test per every N batches')
 parser.add_argument('--epochs', type=int, default=5,
                     help='number of epochs to train')
