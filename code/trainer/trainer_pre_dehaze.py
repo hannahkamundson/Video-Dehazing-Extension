@@ -31,7 +31,9 @@ class Trainer_Pre_Dehaze(Trainer):
         # This is where self.scheduler.step() was
         
         epoch = self.scheduler.last_epoch + 1
-        lr = self.scheduler.get_lr()[0]
+        lr = 0.0001
+        # self.scheduler.get_lr()[0]
+        print_pretty(f"LR: l")
         self.ckp.write_log('Epoch {:3d} with Lr {:.2e}'.format(epoch, decimal.Decimal(lr)))
         self.model.train()
         self.ckp.start_log()

@@ -4,6 +4,7 @@ import imageio
 import utils.data_utils as utils
 import torch.utils.data as data
 from utils.print import print_pretty
+from par import DistributedManager
 
 
 class IMAGEDATA(data.Dataset):
@@ -18,6 +19,7 @@ class IMAGEDATA(data.Dataset):
         no_data_augmentation: bool,
         size_must_mode: int,
         max_rgb_value: int,
+        distributed_manager: DistributedManager,
         train=True, 
         clear_folder: str='GT', 
         hazy_folder: str='INPUT'):
@@ -33,6 +35,8 @@ class IMAGEDATA(data.Dataset):
         self.load_all_on_ram = load_all_on_ram
         # Do we want to use data augmentation?
         self.no_data_augmentation = no_data_augmentation
+        self.should_write = distributed_manager.is_parent_gpu() or not distributed_manager.is_distributed
+        self.images_processed = 0
 
         # Set the clear and hazy file systems
         # Choose a directory based on whether we are looking at the training dataset or the testing dataset
@@ -44,7 +48,9 @@ class IMAGEDATA(data.Dataset):
         self.images_gt, self.images_input = self._scan()
 
         self.num_image = len(self.images_gt)
-        print_pretty("Number of images to load:", self.num_image)
+        
+        if self.should_write:
+            print_pretty("Number of images to load:", self.num_image)
 
         if train:
             self.repeat = max(test_every_x_batch // max((self.num_image // batch_size), 1), 1)
@@ -98,6 +104,7 @@ class IMAGEDATA(data.Dataset):
         input, gt = self.get_patch(input, gt, self.size_must_mode)
         input_tensor, gt_tensor = utils.np2Tensor(input, gt, rgb_range=self.max_rgb_value)
 
+        self.images_processed = self.images_processed + 1
         return input_tensor, gt_tensor, filename
 
     def __len__(self):

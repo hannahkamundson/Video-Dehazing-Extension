@@ -65,7 +65,7 @@ class Data:
         print_pretty(f'Data Manager: Loading the {data_type} dataset with name {dataset_name} batch size: {batch_size}, number of workers: {number_of_threads} and pin memory: {not is_cpu}')
 
         module = import_module('data.' + dataset_name.lower())
-        dataset = getattr(module, dataset_name.upper())(namespace, name=dataset_name, train=is_train)
+        dataset = getattr(module, dataset_name.upper())(namespace, name=dataset_name, train=is_train, distributed_manager=distributed_manager)
         
         
         # If it is distributed and we are training, we need to load the data in a distributed fashion
@@ -77,7 +77,7 @@ class Data:
                                                      rank=distributed_manager.global_rank,
                                                      drop_last=False)
             
-            batch_size_per_gpu = int(batch_size/distributed_manager.gpus_per_node)
+            batch_size_per_gpu = int(batch_size/distributed_manager.total_gpus)
             print_pretty(f"Data Manager: Original batch size was {batch_size} and this GPU will load {batch_size_per_gpu}")
             
             return DataLoader(
@@ -85,8 +85,7 @@ class Data:
                 sampler=sampler,
                 batch_size=batch_size_per_gpu,
                 shuffle=False,
-                pin_memory=True,
-                num_workers=number_of_threads
+                pin_memory=True
             )
             
             

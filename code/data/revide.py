@@ -2,9 +2,10 @@ from data import imagedata
 import glob
 import os
 import imageio
+from par import DistributedManager
 
 class REVIDE(imagedata.IMAGEDATA):
-    def __init__(self, namespace, name='REVIDE', train=True):
+    def __init__(self, namespace, distributed_manager: DistributedManager, name='REVIDE', train=True):
         super(REVIDE, self).__init__(name=name, 
             train=train, 
             batch_size=namespace.batch_size,
@@ -16,6 +17,7 @@ class REVIDE(imagedata.IMAGEDATA):
             no_data_augmentation=namespace.no_augment,
             size_must_mode=namespace.size_must_mode,
             max_rgb_value =namespace.rgb_range,
+            distributed_manager=distributed_manager,
             clear_folder='gt', 
             hazy_folder='hazy')
 
