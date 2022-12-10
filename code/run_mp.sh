@@ -1,16 +1,14 @@
 #!/bin/bash
 #SBATCH --job-name=revide_par
 #SBATCH -p gpu-a100
-#SBATCH --time=05:00:00
+#SBATCH --time=01:00:00
 
 #SBATCH -o /scratch/08310/rs821505/train_outputs/run_mp.o%j
 #SBATCH -e /scratch/08310/rs821505/train_outputs/run_mp.e%j
 
-### e.g. request 4 nodes with 1 gpu each, totally 4 gpus (WORLD_SIZE==4)
-### Note: --gres=gpu:x should equal to ntasks-per-node
-#SBATCH --nodes=2
+#SBATCH --nodes=4
 #SBATCH --ntasks-per-node=3
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=40
 
 
 ### change 5-digit MASTER_PORT as you wish, slurm will raise Error if duplicated with others
