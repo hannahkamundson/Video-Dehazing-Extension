@@ -30,7 +30,7 @@ class Trainer_Dehaze(Trainer):
         epoch = self.scheduler.last_epoch + 1
         print_pretty(f"Dehaze: Now training for epoch {epoch}")
         lr = self.scheduler.get_last_lr()
-        self.ckp.write_log('Epoch {:3d} with Lr {:.2e}'.format(epoch, decimal.Decimal(lr)))
+        self.ckp.write_log(f'Epoch {epoch} with Lr {lr}')
         self.model.train()
         self.ckp.start_log()
 
