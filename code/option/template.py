@@ -20,24 +20,25 @@ def _set_base(args: Namespace) -> Namespace:
     Returns:
         The argparse namespace that was entered + the new changes we want to the args
     """
-    args.data_train = 'RESIDE'
-    args.data_test = 'RESIDE'
-    args.dir_data_test = '../dataset/SOTS/indoor'
+    args.data_train = 'REVIDE'
+    args.data_test = 'REVIDE'
+    args.dir_data_test = '../dataset/REVIDE_REDUCED/Dehaze_Validate'
     args.t_channels = 1
     args.n_feat = 32
     args.n_resblock = 3
     args.size_must_mode = 4
     args.loss = '1*L1'
-    args.lr = 1e-4
+    args.lr = 1e-5
     args.lr_decay = 200
-    args.epochs = 50
-    args.batch_size = 32*6
+    args.epochs = 500
+    args.batch_size = 8
     args.mid_loss_weight = 0.05
     args.save_middle_models = True
     args.save_images = False
+    args.other_loss = 'grad+others'
     # args.resume = True
     # args.load = args.save
-    # args.test_only = True
+    #args.test_only = True
 
     return args
 
@@ -89,12 +90,12 @@ def set_template(args: Namespace) -> Namespace:
             args.dir_data = '../dataset/REVIDE/Train'
             args.save = DatasetName.REVIDE.name
         # REVIDE reduced dataset
-        elif template_type == "Pre_Dehaze_revidereduced":
+        if template_type == "Pre_Dehaze_revidereduced":
             print_pretty("Creating the template for Pre_Dehaze REVIDE reduced")
             args.data_train = 'REVIDE'
-            args.data_test = 'REVIDE'
-            # dir_data is the path to the training data
             args.dir_data = '../dataset/REVIDE_REDUCED/Train'
+            args.data_test = 'REVIDE'
+            args.dir_data_test ='../dataset/REVIDE_REDUCED/Validate'
             args.save = DatasetName.REVIDE_REDUCED.name
         else:
             raise NotImplementedError('Template Pre Dehaze [{:s}] is not found'.format(args.template))

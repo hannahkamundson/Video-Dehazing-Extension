@@ -80,16 +80,18 @@ class Logger:
             # self.plot_loss_log(epoch)
             # self.plot_psnr_log(epoch)
 
-    def save_images(self, filename, save_list):
-        dirname = os.path.join('result', self.args.data_test)
-        self.dirs.create_directory_if_not_exists(dirname)
-        filename = '{}/{}'.format(dirname, filename)
-        if self.args.task == '.':
-            postfix = ['combine']
-        else:
-            postfix = ['combine']
-        for img, post in zip(save_list, postfix):
-            self.dirs.imageio_write(dirname, f'{filename}_{post}.png', img)
+    def save_images(self,epoch, filename, save_list):
+        #dirname = os.path.join('result', self.args.data_test)
+        #self.dirs.create_directory_if_not_exists(dirname)
+        #filename = '{}/{}'.format(dirname, filename)
+        #if self.args.task == '.':
+        #    postfix = ['combine']
+        #else:
+         #   postfix = ['combine']
+        #for img, post in zip(save_list, postfix):
+        outs = ['input_','output_','target_']
+        for j, img in enumerate(save_list):
+            self.dirs.imageio_write(epoch,list(),outs[j]+filename, img)
 
     def start_log(self, train=True):
         if train:

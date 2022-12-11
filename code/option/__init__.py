@@ -71,11 +71,11 @@ parser.add_argument('--auto_pre_train', action='store_true',
                     help='Auto load the pre trained model with the same timestamp')
 
 # Training specifications
-parser.add_argument('--test_every', type=int, default=100,
+parser.add_argument('--test_every', type=int, default=1000,
                     help='do test per every N batches')
-parser.add_argument('--epochs', type=int, default=5,
+parser.add_argument('--epochs', type=int, default=500,
                     help='number of epochs to train')
-parser.add_argument('--batch_size', type=int, default=5,
+parser.add_argument('--batch_size', type=int, default=8,
                     help='input batch size for training')
 parser.add_argument('--test_only', action='store_true',
                     help='set this option to test the model')
@@ -87,7 +87,7 @@ parser.add_argument('--other_loss', type=str, default='others',
                     help='loss function configuration')
 parser.add_argument('--mid_loss_weight', type=float, default=1.,
                     help='the weight of mid loss in trainer')
-parser.add_argument('--lr', type=float, default=1e-4,
+parser.add_argument('--lr', type=float, default=1e-5,
                     help='learning rate')
 parser.add_argument('--lr_decay', type=int, default=200,
                     help='learning rate decay per N epochs')
@@ -115,7 +115,7 @@ parser.add_argument('--load', type=str, default='.',
                     help='file name to load')
 parser.add_argument('--resume', action='store_true',
                     help='resume from the latest if true')
-parser.add_argument('--print_every', type=int, default=10,
+parser.add_argument('--print_every', type=int, default=100,
                     help='how many batches to wait before logging training status')
 parser.add_argument('--save_images', default=True, action='store_true',
                     help='save images')

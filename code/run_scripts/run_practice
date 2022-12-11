@@ -1,0 +1,17 @@
+#!/bin/bash
+#SBATCH -J srun_multi_test
+#SBATCH -o /scratch/08310/rs821505/train_outputs/srun_test.o%j
+#SBATCH -e /scratch/08310/rs821505/train_outputs/srun_test.e%j
+#SBATCH -p gpu-a100
+#SBATCH -N 2
+#SBATCH --ntasks-per-node 3
+#SBATCH -t 00:07:00
+
+#SBATCH --mail-user=myemail@test.edu
+#SBATCH --mail-type=begin        # email me when the job starts
+#SBATCH --mail-type=end          # email me when the job finishes
+
+
+export MASTER_ADDR=$(hostname)
+export MASTER_PORT="12345"
+srun python practice.py

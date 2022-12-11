@@ -37,7 +37,7 @@ class Data:
             # Load training dataset
             self.loader_train = self._create_loader(is_train=True,
                 dataset_name=self.data_train,
-                batch_size=batch_size,
+                batch_size=self.args.batch_size,
                 is_cpu=is_cpu,
                 number_of_threads=number_of_threads,
                 namespace=self.args,
@@ -83,14 +83,16 @@ class Data:
             batch_size_per_gpu = int(batch_size/distributed_manager.total_gpus)
             print_pretty(f"Data Manager: Original batch size was {batch_size} and this GPU will load {batch_size_per_gpu}")
             print_pretty(f"World_size: {distributed_manager.total_gpus}\n")
-            # dload_test(dataset) 
+
+            #dload_test(dataset)
+ 
             return DataLoader(
                 dataset=dataset,
                 sampler=sampler,
-                batch_size=64,
+                batch_size=batch_size,
                 shuffle=False,
                 pin_memory=True,
-                num_workers=36
+                num_workers=24
             )
             
             
@@ -99,24 +101,24 @@ class Data:
             print_pretty(f"Data Manager: Creating non distributed data loader for {'train' if is_train else 'test'}")
             return DataLoader(
                 dataset=dataset,
-                batch_size=64,
+                batch_size=self.args.batch_size,
                 shuffle=is_train,
                 pin_memory=not is_cpu,
-                num_workers=36
+                num_workers=24
             )
 
 
 
 
 
-'''
+
 def dload_test(dataset):
     for num_workers in range(2, mp.cpu_count(), 2):  
         train_loader = DataLoader(dataset,shuffle=False,num_workers=num_workers,batch_size=64,pin_memory=True)
-    start = time()
-    for epoch in range(1, 3):
-        for i, data in enumerate(train_loader, 0):
-            pass
-    end = time()
-    print_pretty("Finish with:{} second, num_workers={}\n".format(end - start, num_workers))
-'''
+        start = time()
+        for epoch in range(1, 3):
+            for i, data in enumerate(train_loader, 0):
+                pass
+        end = time()
+        print_pretty("Finish with:{} second, num_workers={}\n".format(end - start, num_workers))
+

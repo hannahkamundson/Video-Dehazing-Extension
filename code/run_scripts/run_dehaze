@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH -J dehaze_reduced_07_18.23
+#SBATCH -o /scratch/08310/rs821505/train_outputs/dehaze_reduced.o%j
+#SBATCH -e /scratch/08310/rs821505/train_outputs/dehaze_reduced.e%j
+#SBATCH -p gpu-a100
+#SBATCH -N 1
+#SBATCH -n 128
+#SBATCH -t 24:00:00
+
+#SBATCH --mail-user=myemail@test.edu
+#SBATCH --mail-type=begin        # email me when the job starts
+#SBATCH --mail-type=end          # email me when the job finishes
+module add gcc
+
+python main.py --template Dehaze_revidereduced --auto_pre_train --prev_timestamp 20221207_18.23

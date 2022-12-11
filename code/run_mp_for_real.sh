@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=predehaze
+#SBATCH --job-name=dehaze
 #SBATCH -p gpu-a100
 #SBATCH --time=24:00:00
 
-#SBATCH -o /scratch/08310/rs821505/train_outputs/run_mp.o%j
-#SBATCH -e /scratch/08310/rs821505/train_outputs/run_mp.e%j
+#SBATCH -o /scratch/08310/rs821505/train_outputs/dehaze_64.o%j
+#SBATCH -e /scratch/08310/rs821505/train_outputs/dehaze_64.e%j
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=3
@@ -29,4 +29,4 @@ module add gcc
 export TORCH_DISTRIBUTED_DEBUG=INFO
 
 ### the command to run
-srun python main.py --slurm_env_var --template Pre_Dehaze_revidereduced
+srun python main.py --slurm_env_var --template Dehaze_revidereduced --prev_timestamp 20221210_19.51 --auto_pre_train

@@ -138,12 +138,16 @@ class DataDirectory:
         """
         return os.path.abspath(self.base_directory)
     
-    def imageio_write(self, folder, file_name, contents):
+    def imageio_write(self, epoch,folder, file_name, contents):
         """
         Write file to a folder with a specific name
         """
-        imageio.imwrite(contents, os.path.join(self.base_directory, folder, file_name))
         
+        # Leave this here Hannah, like seriously don't f with it
+        parent_dir = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED128/Dehaze_Validate_Results'
+        #imageio.imwrite(os.path.join(self.base_directory, folder, file_name),contents)
+        imageio.imwrite(os.path.join(parent_dir,file_name),contents)
+
     def load_torch(self, file_name: str):
         """
         Load torch in terms of the base directory.
