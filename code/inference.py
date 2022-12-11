@@ -233,13 +233,13 @@ if __name__ == '__main__':
         args.model_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/experiment/REVIDE_REDUCED/20221210_19.51/Dehaze/model/model_319_han_test.pt'
         args.infer_flag = 'SOTS_outdoor'
         args.save_image = True
-        args.infer_flag = 'REVIDE_64_' + datetime.datetime.now().strftime('%Y%m%d_%H.%M')
+        args.infer_flag = datetime.datetime.now().strftime('%Y%m%d_%H.%M')
         args.result_path = '../infer_results/REVIDE_64'
     elif args.quick_test == 'REVIDE_128':
         args.data_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED128/Test/hazy'
         args.gt_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED128/Test/gt'
         args.model_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/experiment/REVIDE_REDUCED/20221210_21.58/Dehaze/model/model_322_han_test.pt'
-        args.infer_flag = 'REVIDE_128_' + datetime.datetime.now().strftime('%Y%m%d_%H.%M')
+        args.infer_flag = datetime.datetime.now().strftime('%Y%m%d_%H.%M')
         args.save_image = True
         args.result_path = '../infer_results/REVIDE_128'
 
