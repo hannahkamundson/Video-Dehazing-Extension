@@ -53,8 +53,13 @@ class DEHAZE_SGID_PFF(nn.Module):
             self.pre_dehaze.load_state_dict(torch.load(pretrain_pre_dehaze_pt))
             print_pretty('Loading pre dehaze model from {}'.format(pretrain_pre_dehaze_pt))
 
-    def forward(self, x):
-        pre_est_J, _, _, _ = self.pre_dehaze(x)
+    def forward(self, x, prior_image):
+        # If there isn't a prior image, we need to use the pre dehaze to get a reference image
+        if prior_image is None:
+            pre_est_J, _, _, _ = self.pre_dehaze(x)
+        # Otherwise, we need to use the prior image as our estimate
+        else:
+            pre_est_J = prior_image
 
         output, trans, air, mid_loss = self.dehaze(x, pre_est_J)
 

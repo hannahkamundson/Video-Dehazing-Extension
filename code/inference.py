@@ -33,6 +33,8 @@ class Inference:
         self.result_path = args.result_path
         self.size_must_mode = args.size_must_mode
         self.device = args.device
+        # Do we want to base our mdoel off the previous frame?
+        self.base_on_prior_frame = args.base_on_prior_frame
 
         if not os.path.exists(self.result_path):
             os.mkdir(self.result_path)
@@ -82,14 +84,39 @@ class Inference:
             for folder_path in glob.glob(os.path.join(self.data_path, '*')):
                 input_images.extend(glob.glob(os.path.join(folder_path, '*')))
                 
+            input_images = sorted(input_images)
+            
             # Get ground truth images
             gt_images: list[str] = []
 
             for folder_path in glob.glob(os.path.join(self.gt_path, '*')):
                 gt_images.extend(glob.glob(os.path.join(folder_path, '*')))
+                
+            gt_images = sorted(gt_images)
+            
+            # We need to store the prior image and the prior video name
+            prior_image = None
+            prior_video_name = None
+            videos_seen_so_far = {}
 
-            for in_im, gt_im in zip(input_images, gt_images):
+            for in_im, gt_im in sorted(zip(input_images, gt_images), key=lambda x: x[1]):
                 start_time = time.time()
+                
+                # Make sure we are calling the same path
+                assert os.path.basename(gt_im) == os.path.basename(in_im), f'The frames need to be the same: clear {gt_im} hazy {in_im}'
+
+                # Since the file loading is more complicated with video, ensure they are coming from the same video
+                ground_truth_video = os.path.basename(os.path.dirname(gt_im))
+                input_video = os.path.basename(os.path.dirname(in_im))
+                assert ground_truth_video == input_video, f'The videos need to be the same: clear {gt_im} hazy {in_im}'
+                
+                # If we are switching to a new video
+                if self.base_on_prior_frame and input_video != prior_video_name:
+                    # Assert that we aren't switching between videos. If a video is being used, all the frames need to come in afterwards
+                    assert input_video not in videos_seen_so_far, "The frames in videos need to be in order"
+                    videos_seen_so_far.add(input_video)
+                
+                # Start dealing with the file name
                 filename = os.path.basename(in_im).split('.')[0]
                 inputs = imageio.imread(in_im)
                 gt = imageio.imread(gt_im)
@@ -98,10 +125,21 @@ class Inference:
                 new_h, new_w = h - h % self.size_must_mode, w - w % self.size_must_mode
                 inputs = inputs[:new_h, :new_w, :]
                 gt = gt[:new_h, :new_w, :]
-
+                
                 in_tensor = self.numpy2tensor(inputs).to(self.device)
                 preprocess_time = time.time()
-                _, output, _, _, _ = self.net(in_tensor)
+                # If we want to use the old technique or if we are using the new technique and have come to a new video, we 
+                # need to create a new reference image
+                if not self.base_on_prior_frame or input_video != prior_video_name:
+                    _, output, _, _, _ = self.net(in_tensor, None)
+                # Otherwise, pass in the prior frame
+                else:
+                    # Read the prior frame in and get it into tensor
+                    prior_img = imageio.imread(prior_image)
+                    prior_img = prior_img[:new_h, :new_w, :]
+                    prior_tensor = self.numpy2tensor(prior_img).to(self.device)
+                    _, output, _, _, _ = self.net(in_tensor, prior_tensor)
+                    
                 forward_time = time.time()
                 output_img = self.tensor2numpy(output)
 
@@ -120,6 +158,9 @@ class Inference:
                                 forward_time - preprocess_time,
                                 postprocess_time - forward_time,
                                 postprocess_time - start_time))
+                
+                prior_video_name = ground_truth_video
+                prior_image = os.path.join(self.result_img_path, '{}.jpg'.format(filename))
 
             self.logger.write_log("# Total AVG-PSNR={:.3f}, AVG-SSIM={:.4f}".format(
                 sum(images_psnr) / len(images_psnr),
@@ -214,6 +255,7 @@ if __name__ == '__main__':
     parser.add_argument('--size_must_mode', type=int, default=4, help='the size of input must mode')
     parser.add_argument('--device', type=str, default='cuda')
     parser.add_argument('--quick_test', type=str, default='.', help='SOTS_indoor/SOTS_outdoor')
+    parser.add_argument('--base_on_prior_frame', action='store_true', default=False, help='Do you want to use the previous frame instead of a reference image?')
     args = parser.parse_args()
     torch.backends.cudnn.benchmark = True
 
