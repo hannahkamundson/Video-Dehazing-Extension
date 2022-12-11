@@ -148,7 +148,7 @@ class Inference:
                 images_ssim.append(ssim)
 
                 if self.save_image:
-                    imageio.imwrite(os.path.join(self.result_img_path, '{}.jpg'.format(filename)), output_img)
+                    imageio.imwrite(os.path.join(self.result_img_path, input_video, '{}.jpg'.format(filename)), output_img)
                 postprocess_time = time.time()
 
                 self.logger.write_log(
@@ -160,7 +160,7 @@ class Inference:
                                 postprocess_time - start_time))
                 
                 prior_video_name = ground_truth_video
-                prior_image = os.path.join(self.result_img_path, '{}.jpg'.format(filename))
+                prior_image = os.path.join(self.result_img_path, input_video, '{}.jpg'.format(filename))
 
             self.logger.write_log("# Total AVG-PSNR={:.3f}, AVG-SSIM={:.4f}".format(
                 sum(images_psnr) / len(images_psnr),
