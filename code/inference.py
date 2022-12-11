@@ -59,7 +59,13 @@ class Inference:
         self.logger.write_log('size_must_mode: {}'.format(self.size_must_mode))
         self.logger.write_log('device: {}'.format(self.device))
 
-        self.net = DEHAZE_SGID_PFF(img_channels=3, t_channels=1, n_resblock=3, n_feat=32, device=self.device)
+        self.net = DEHAZE_SGID_PFF(img_channels=3, 
+                                   t_channels=1, 
+                                   n_resblock=3, 
+                                   n_feat=32, 
+                                   device=self.device,
+                                   auto_load_pretrained=False,
+                                   dirs=None)
         self.net.load_state_dict(torch.load(self.model_path), strict=False)
         self.net = self.net.to(self.device)
         self.logger.write_log('Loading model from {}'.format(self.model_path))
