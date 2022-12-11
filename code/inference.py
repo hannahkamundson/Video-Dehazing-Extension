@@ -44,11 +44,11 @@ class Inference:
         if not os.path.exists(self.result_path):
             os.mkdir(self.result_path)
             print('mkdir: {}'.format(self.result_path))
-        self.result_img_path = os.path.join(self.result_path, 'inference_image_{}'.format(time_str))
+        self.result_img_path = os.path.join(self.result_path, 'inference_image')
         if not os.path.exists(self.result_img_path):
             os.mkdir(self.result_img_path)
             print('mkdir: {}'.format(self.result_img_path))
-        self.logger = Traverse_Logger(self.result_path, 'inference_log_{}.txt'.format(time_str))
+        self.logger = Traverse_Logger(self.result_path, 'inference_log.txt')
 
         self.logger.write_log('Inference - {}'.format(infer_flag))
         self.logger.write_log('save_image: {}'.format(self.save_image))
@@ -110,7 +110,7 @@ class Inference:
                 images_ssim.append(ssim)
 
                 if self.save_image:
-                    imageio.imwrite(os.path.join(self.result_img_path, '{}.png'.format(filename)), output_img)
+                    imageio.imwrite(os.path.join(self.result_img_path, '{}.jpg'.format(filename)), output_img)
                 postprocess_time = time.time()
 
                 self.logger.write_log(
