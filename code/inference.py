@@ -75,8 +75,19 @@ class Inference:
         with torch.no_grad():
             images_psnr = []
             images_ssim = []
-            input_images = sorted(glob.glob(os.path.join(self.data_path, "*")))
-            gt_images = sorted(glob.glob(os.path.join(self.gt_path, "*")))
+            
+            # Get the hazy images
+            input_images: list[str] = []
+
+            for folder_path in glob.glob(os.path.join(self.data_path, '*')):
+                input_images.extend(glob.glob(os.path.join(folder_path, '*')))
+                
+            # Get ground truth images
+            gt_images: list[str] = []
+
+            for folder_path in glob.glob(os.path.join(self.gt_path, '*')):
+                gt_images.extend(glob.glob(os.path.join(folder_path, '*')))
+
             for in_im, gt_im in zip(input_images, gt_images):
                 start_time = time.time()
                 filename = os.path.basename(in_im).split('.')[0]
