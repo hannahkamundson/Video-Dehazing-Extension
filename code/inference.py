@@ -2,7 +2,7 @@ import os
 import torch
 import glob
 import numpy as np
-import imageio
+import imageio.v2 as imageio
 import cv2
 import math
 import time
