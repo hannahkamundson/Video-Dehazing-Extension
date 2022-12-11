@@ -9,6 +9,7 @@ import time
 import argparse
 from model.dehaze_sgid_pff import DEHAZE_SGID_PFF
 from utils.print import print_pretty
+import datetime
 
 
 class Traverse_Logger:
@@ -18,7 +19,7 @@ class Traverse_Logger:
         self.log_file = open(self.log_file_path, open_type)
 
     def write_log(self, log):
-        print_pretty(log)
+        print(log)
         self.log_file.write(log + '\n')
 
 
@@ -35,18 +36,18 @@ class Inference:
 
         if not os.path.exists(self.result_path):
             os.mkdir(self.result_path)
-            print_pretty('mkdir: {}'.format(self.result_path))
+            print('mkdir: {}'.format(self.result_path))
 
         time_str = time.strftime("%Y-%m-%d %H-%M-%S", time.localtime())
         infer_flag = args.infer_flag if args.infer_flag != '.' else time_str
         self.result_path = os.path.join(self.result_path, 'infer_{}'.format(infer_flag))
         if not os.path.exists(self.result_path):
             os.mkdir(self.result_path)
-            print_pretty('mkdir: {}'.format(self.result_path))
+            print('mkdir: {}'.format(self.result_path))
         self.result_img_path = os.path.join(self.result_path, 'inference_image_{}'.format(time_str))
         if not os.path.exists(self.result_img_path):
             os.mkdir(self.result_img_path)
-            print_pretty('mkdir: {}'.format(self.result_img_path))
+            print('mkdir: {}'.format(self.result_img_path))
         self.logger = Traverse_Logger(self.result_path, 'inference_log_{}.txt'.format(time_str))
 
         self.logger.write_log('Inference - {}'.format(infer_flag))
@@ -76,7 +77,7 @@ class Inference:
                 inputs = imageio.imread(in_im)
                 gt = imageio.imread(gt_im)
 
-                h, w, c = inputs.shape
+                h, w, _ = inputs.shape
                 new_h, new_w = h - h % self.size_must_mode, w - w % self.size_must_mode
                 inputs = inputs[:new_h, :new_w, :]
                 gt = gt[:new_h, :new_w, :]
@@ -209,6 +210,21 @@ if __name__ == '__main__':
         args.gt_path = '../dataset/SOTS/outdoor/clear'
         args.model_path = '../pretrained_models/SOTS_outdoor.pt'
         args.infer_flag = 'SOTS_outdoor'
+    elif args.quick_test == 'REVIDE_64':
+        args.data_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED/Test/hazy'
+        args.gt_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED/Test/gt'
+        args.model_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/experiment/REVIDE_REDUCED/20221210_19.51/Dehaze/model/model_319_han_test.pt'
+        args.infer_flag = 'SOTS_outdoor'
+        args.save_image = True
+        args.infer_flag = 'REVIDE_64_' + datetime.datetime.now().strftime('%Y%m%d_%H.%M')
+        args.result_path = '../infer_results/REVIDE_64'
+    elif args.quick_test == 'REVIDE_128':
+        args.data_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED128/Test/hazy'
+        args.gt_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED128/Test/gt'
+        args.model_path = '/scratch/08310/rs821505/Video-Dehazing-Extension/experiment/REVIDE_REDUCED/20221210_21.58/Dehaze/model/model_322_han_test.pt'
+        args.infer_flag = 'REVIDE_128_' + datetime.datetime.now().strftime('%Y%m%d_%H.%M')
+        args.save_image = True
+        args.result_path = '../infer_results/REVIDE_128'
 
     Infer = Inference(args)
     Infer.infer()
