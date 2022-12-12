@@ -100,6 +100,7 @@ class Inference:
             videos_seen_so_far = {}
 
             for in_im, gt_im in sorted(zip(input_images, gt_images), key=lambda x: x[1]):
+                used_prior_image = False
                 start_time = time.time()
                 
                 # Make sure we are calling the same path
@@ -134,6 +135,7 @@ class Inference:
                     _, output, _, _, _ = self.net(in_tensor, None)
                 # Otherwise, pass in the prior frame
                 else:
+                    used_prior_image = True
                     # Read the prior frame in and get it into tensor
                     prior_img = imageio.imread(prior_image)
                     prior_img = prior_img[:new_h, :new_w, :]
@@ -156,12 +158,13 @@ class Inference:
                 postprocess_time = time.time()
 
                 self.logger.write_log(
-                    '> {} PSNR={:.3f}, SSIM={:.4f} pre_time:{:.3f}s, forward_time:{:.3f}s, post_time:{:.3f}s, total_time:{:.3f}s'
+                    '> {} PSNR={:.3f}, SSIM={:.4f} pre_time:{:.3f}s, forward_time:{:.3f}s, post_time:{:.3f}s, total_time:{:.3f}s, prior_image:{}'
                         .format(filename, psnr, ssim,
                                 preprocess_time - start_time,
                                 forward_time - preprocess_time,
                                 postprocess_time - forward_time,
-                                postprocess_time - start_time))
+                                postprocess_time - start_time,
+                                used_prior_image))
                 
                 prior_video_name = ground_truth_video
                 prior_image = os.path.join(self.result_img_path, input_video, '{}.jpg'.format(filename))
