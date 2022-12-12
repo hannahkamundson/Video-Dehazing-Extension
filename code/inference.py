@@ -74,6 +74,7 @@ class Inference:
         self.net.eval()
 
     def infer(self):
+        self.logger.write_log('Starting inference')
         with torch.no_grad():
             images_psnr = []
             images_ssim = []
@@ -99,6 +100,7 @@ class Inference:
             prior_video_name = None
             videos_seen_so_far = {}
 
+            self.logger.write_log('Starting the images')
             for in_im, gt_im in sorted(zip(input_images, gt_images), key=lambda x: x[1]):
                 used_prior_image = False
                 start_time = time.time()
