@@ -3,8 +3,8 @@
 #SBATCH -p gpu-a100
 #SBATCH --time=24:00:00
 
-#SBATCH -o /scratch/08310/rs821505/train_outputs/test_novel_128.o%j
-#SBATCH -e /scratch/08310/rs821505/train_outputs/test_novel_128.e%j
+#SBATCH -o /scratch/08310/rs821505/train_outputs/test_128.o%j
+#SBATCH -e /scratch/08310/rs821505/train_outputs/test_128.e%j
 
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1

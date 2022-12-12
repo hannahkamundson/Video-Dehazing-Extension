@@ -1,0 +1,9 @@
+Inference - 20221211_18.09
+save_image: True
+data_path: /scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED128/Test/hazy
+gt_path: /scratch/08310/rs821505/Video-Dehazing-Extension/dataset/REVIDE_REDUCED128/Test/gt
+model_path: /scratch/08310/rs821505/Video-Dehazing-Extension/experiment/REVIDE_REDUCED/20221210_21.58/Dehaze/model/model_best.pt
+result_path: ../infer_results/REVIDE_128/infer_20221211_18.09
+size_must_mode: 4
+device: cuda
+Loading model from /scratch/08310/rs821505/Video-Dehazing-Extension/experiment/REVIDE_REDUCED/20221210_21.58/Dehaze/model/model_best.pt
