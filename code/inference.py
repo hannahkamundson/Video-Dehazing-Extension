@@ -148,7 +148,11 @@ class Inference:
                 images_ssim.append(ssim)
 
                 if self.save_image:
-                    imageio.imwrite(os.path.join(self.result_img_path, input_video, '{}.jpg'.format(filename)), output_img)
+                    video_results_path = os.path.join(self.result_img_path, input_video)
+                    if not os.path.exists(video_results_path):
+                        os.mkdir(video_results_path)
+                        print('mkdir: {}'.format(video_results_path))
+                    imageio.imwrite(os.path.join(video_results_path, '{}.jpg'.format(filename)), output_img)
                 postprocess_time = time.time()
 
                 self.logger.write_log(
