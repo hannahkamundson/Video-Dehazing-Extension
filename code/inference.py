@@ -98,7 +98,7 @@ class Inference:
             # We need to store the prior image and the prior video name
             prior_image = None
             prior_video_name = None
-            videos_seen_so_far = {}
+            videos_seen_so_far = set()
 
             self.logger.write_log('Starting the images')
             for in_im, gt_im in sorted(zip(input_images, gt_images), key=lambda x: x[1]):
